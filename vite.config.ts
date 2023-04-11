@@ -1,9 +1,33 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
+import AutoImport from "unplugin-auto-import/vite";
+
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
-  plugins: [react()],
+  plugins: [
+    react(),
+    AutoImport({
+      dts: "./src/types/auto-import.d.ts",
+      eslintrc: {
+        enabled: true,
+      },
+      imports: [
+        // presets
+        "react",
+        // "antd",
+      ],
+      // resolvers: [ElementPlusResolver()],
+      vueTemplate: true,
+      dirs: [
+        // "./src/axios/*",
+        // "./src/plugins/*",
+        // "./src/router/*",
+        // "./src/store/*",
+        "./src/utils/*",
+      ],
+    }),
+  ],
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   // prevent vite from obscuring rust errors

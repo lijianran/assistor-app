@@ -1,53 +1,116 @@
+import {
+  CrownOutlined,
+  DotChartOutlined,
+  InfoCircleOutlined,
+  MergeCellsOutlined,
+  QuestionCircleOutlined,
+  TabletOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
+import { ProLayout, PageContainer, ProCard } from "@ant-design/pro-components";
+import { Button, Result } from "antd";
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import { invoke } from "@tauri-apps/api/tauri";
-import "./App.css";
+import { Link, Outlet } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
+// import Home from "../App";
+// import ErrorPage from "./error-page";
 
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-    setGreetMsg(await invoke("greet", { name }));
-  }
-
+export default () => {
+  const [pathname, setPathname] = useState("/");
   return (
-    <div className="container">
-      <h1>Welcome to Tauri!</h1>
-
-      <div className="row">
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
-
-      <div className="row">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            greet();
-          }}
-        >
-          <input
-            id="greet-input"
-            onChange={(e) => setName(e.currentTarget.value)}
-            placeholder="Enter a name..."
-          />
-          <button type="submit">Greet</button>
-        </form>
-      </div>
-      <p>{greetMsg}</p>
+    <div
+      id="test-pro-layout"
+      style={{
+        height: "100vh",
+      }}
+    >
+      <ProLayout
+        title="功能菜单"
+        fixSiderbar
+        route={{
+          path: "/",
+          routes: [
+            {
+              path: "/",
+              name: "主页",
+              icon: <CrownOutlined />,
+              // access: "canAdmin",
+              // component: <Home />,
+            },
+            {
+              path: "/score",
+              name: "成绩统计",
+              icon: <DotChartOutlined />,
+              // access: "canAdmin",
+              // component: <Home />,
+            },
+            {
+              name: "测试二级菜单",
+              icon: <TabletOutlined />,
+              path: "/list",
+              component: "./ListTableList",
+              routes: [
+                {
+                  path: "/list/sub-page2",
+                  name: "二级列表页面",
+                  icon: <CrownOutlined />,
+                  component: "./Welcome",
+                },
+                {
+                  path: "/list/sub-page3",
+                  name: "三级列表页面",
+                  icon: <CrownOutlined />,
+                  component: "./Welcome",
+                },
+              ],
+            },
+          ],
+        }}
+        location={{
+          pathname,
+        }}
+        waterMarkProps={{
+          content: "Pro Layout",
+        }}
+        // avatarProps={{
+        //   icon: <UserOutlined />,
+        //   size: "small",
+        //   title: "lijianran",
+        // }}
+        // actionsRender={() => [
+        //   <InfoCircleOutlined key="InfoCircleOutlined" />,
+        //   <QuestionCircleOutlined key="QuestionCircleOutlined" />,
+        //   <MergeCellsOutlined key="MergeCellsOutlined" />,
+        // ]}
+        // menuFooterRender={(props: any) => {
+        //   if (props?.collapsed) return undefined;
+        //   return (
+        //     <p
+        //       style={{
+        //         textAlign: "center",
+        //         color: "rgba(0,0,0,0.6)",
+        //         paddingBlockStart: 12,
+        //       }}
+        //     >
+        //       Power by Ant Design
+        //     </p>
+        //   );
+        // }}
+        onMenuHeaderClick={(e: any) => console.log(e)}
+        menuItemRender={(item: any, dom: any) => (
+          <Link
+            to={item.path}
+            onClick={() => {
+              setPathname(item.path || "/welcome");
+            }}
+          >
+            {dom}
+          </Link>
+        )}
+      >
+        <Outlet />
+      </ProLayout>
     </div>
   );
-}
-
-export default App;
+};
