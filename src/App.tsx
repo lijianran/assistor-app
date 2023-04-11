@@ -10,14 +10,42 @@ import {
 import { ProLayout, PageContainer, ProCard } from "@ant-design/pro-components";
 import { Button, Result } from "antd";
 import { useState } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import { emit } from "@tauri-apps/api/event";
+import { isRegistered, register } from "@tauri-apps/api/globalShortcut";
 
 // import Home from "../App";
 // import ErrorPage from "./error-page";
 
 export default () => {
-  const [pathname, setPathname] = useState("/");
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    window.addEventListener("keydown", (event: KeyboardEvent) => {
+      const key = event.key.toLowerCase();
+      const isCtrlPressed = event.ctrlKey || event.metaKey;
+
+      if (!isCtrlPressed) {
+        return;
+      }
+
+      if (key === "r") {
+        navigate(0);
+        event.preventDefault();
+      } else if (key === "e") {
+        navigate("/");
+      } else if (key === "d") {
+        emit("open_devtools");
+      } else {
+        return;
+      }
+    });
+  });
+  // const [pathname, setPathname] = useState("/");
+
   return (
     <div
       id="test-pro-layout"
@@ -68,7 +96,7 @@ export default () => {
           ],
         }}
         location={{
-          pathname,
+          pathname: location.pathname,
         }}
         waterMarkProps={{
           content: "Pro Layout",
@@ -99,14 +127,7 @@ export default () => {
         // }}
         onMenuHeaderClick={(e: any) => console.log(e)}
         menuItemRender={(item: any, dom: any) => (
-          <Link
-            to={item.path}
-            onClick={() => {
-              setPathname(item.path || "/welcome");
-            }}
-          >
-            {dom}
-          </Link>
+          <Link to={item.path}>{dom}</Link>
         )}
       >
         <Outlet />
