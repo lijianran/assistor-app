@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist, devtools } from "zustand/middleware";
 
 function initScoreTitle() {
   return <ScoreTitleIndex>{
@@ -75,8 +76,12 @@ export const useScoreStore = create<ScoreProps>((set, get) => ({
   openDrawer: false,
 
   scoreTitleRequired: titleRequireDict,
-  classTitleRequired: classRequireDict,
   scoreTitleIndex: initScoreTitle(),
+  scoreColumns: [],
+  scoreTableData: [],
+  scoreTitleOptions: [],
+
+  classTitleRequired: classRequireDict,
   classTitleIndex: initClassTitle(),
 
   setCurrentStep(val) {
@@ -93,6 +98,7 @@ export const useScoreStore = create<ScoreProps>((set, get) => ({
   setOpenDrawer(val) {
     set({ openDrawer: val });
   },
+
   setScoreTitleIndex: (val) => {
     let titleIndex = initScoreTitle();
     for (const key in val) {
@@ -102,6 +108,16 @@ export const useScoreStore = create<ScoreProps>((set, get) => ({
     }
     set({ scoreTitleIndex: titleIndex });
   },
+  setScoreColumns(val) {
+    set({ scoreColumns: val });
+  },
+  setScoreTableData(val) {
+    set({ scoreTableData: val });
+  },
+  setScoreTitleOptions(val) {
+    set({ scoreTitleOptions: val });
+  },
+
   setClassTitleIndex: (val) => {
     let titleIndex = initClassTitle();
     for (const key in val) {
@@ -112,3 +128,78 @@ export const useScoreStore = create<ScoreProps>((set, get) => ({
     set({ classTitleIndex: titleIndex });
   },
 }));
+
+// const scoreTitleDict = [
+//   { label: "姓名", value: "name" },
+//   { label: "考号", value: "id" },
+//   { label: "班级", value: "class", required: true },
+//   { label: "总分", value: "total", required: true },
+//   { label: "语文", value: "chinese" },
+//   { label: "数学", value: "math" },
+//   { label: "英语", value: "english" },
+//   { label: "物理", value: "wuli" },
+//   { label: "化学", value: "huaxue" },
+//   { label: "道法", value: "daofa" },
+//   { label: "历史", value: "lishi" },
+//   { label: "地理", value: "dili" },
+//   { label: "生物", value: "shengwu" },
+// ];
+// const classTitleDict = [
+//   { label: "班级", value: "class", required: true },
+//   { label: "语文", value: "chinese" },
+//   { label: "数学", value: "math" },
+//   { label: "英语", value: "english" },
+//   { label: "物理", value: "wuli" },
+//   { label: "化学", value: "huaxue" },
+//   { label: "道法", value: "daofa" },
+//   { label: "历史", value: "lishi" },
+//   { label: "地理", value: "dili" },
+//   { label: "生物", value: "shengwu" },
+//   { label: "人数", value: "count", required: true },
+// ];
+
+function initSubjectScore() {
+  return <SubjectScore>{
+    语文: 120,
+    数学: 120,
+    英语: 120,
+    物理: 60,
+    化学: 50,
+    道法: 60,
+    历史: 60,
+    地理: 50,
+    生物: 50,
+  };
+}
+export const useScoreSettingStore = create<
+  ScoreSetting,
+  [["zustand/devtools", never], ["zustand/persist", ScoreSetting]]
+>(
+  devtools(
+    persist(
+      (set, get) => ({
+        subjectScore: initSubjectScore(),
+        totalScore: 690,
+        kindGood: 80,
+        kindOk: 60,
+
+        setSubjectScore: (val) => {
+          set({ subjectScore: val });
+        },
+        setTotalScore(val) {
+          set({ totalScore: val });
+        },
+        setKindGood(val) {
+          set({ kindGood: val });
+        },
+        setKindOk(val) {
+          set({ kindOk: val });
+        },
+      }),
+      {
+        name: "score-storage",
+        // getStorage: () => localStorage,
+      }
+    )
+  )
+);

@@ -15,7 +15,6 @@ import {
 const { Option } = Select;
 
 function App({ titleOptions, formRef, titleInit }: any) {
-  // const [open, setOpen] = useState(false);
   // store
   const tabKey = useScoreStore((state) => state.tabKey);
   const currentStep = useScoreStore((state) => state.currentStep);
@@ -66,36 +65,6 @@ function App({ titleOptions, formRef, titleInit }: any) {
     console.log("Failed:", errorInfo);
   };
 
-  // const titleDict = [
-  //   { label: "姓名", value: "name" },
-  //   { label: "考号", value: "id" },
-  //   { label: "班级", value: "class", required: true },
-  //   { label: "总分", value: "total" },
-  //   { label: "语文", value: "chinese" },
-  //   { label: "数学", value: "math" },
-  //   { label: "英语", value: "english" },
-  //   { label: "物理", value: "wuli" },
-  //   { label: "化学", value: "huaxue" },
-  //   { label: "道法", value: "daofa" },
-  //   { label: "历史", value: "lishi" },
-  //   { label: "地理", value: "dili" },
-  //   { label: "生物", value: "shengwu" },
-  // ];
-  // const titleList = [
-  //   "姓名",
-  //   "考号",
-  //   "班级",
-  //   "总分",
-  //   "语文",
-  //   "数学",
-  //   "英语",
-  //   "物理",
-  //   "化学",
-  //   "道法",
-  //   "历史",
-  //   "地理",
-  //   "生物",
-  // ];
   function handleValidator(rule: any, value: any) {
     const values: any = formRef.current.getFieldsValue();
 

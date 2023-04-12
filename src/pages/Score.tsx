@@ -4,19 +4,21 @@ import {
   DotChartOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
-import type { UploadProps, TabsProps } from "antd";
 import { Button, Typography, Col, Row, Space, Table, Empty } from "antd";
 
 import Steps from "../components/Steps";
-import ScoreTable from "../components/ScoreTable";
 import TableTabs from "../components/TableTabs";
 import TitleDrawer from "../components/TitleDrawer";
-import TitleForm from "../components/TitleForm";
+import ParamsSetting from "../components/ParamsSetting";
 
+import { emit } from "@tauri-apps/api/event";
+
+import type { TabsProps } from "antd";
 import type { FormInstance } from "antd/es/form";
 
 const { Title } = Typography;
 
+// 获取表格数据
 function getTableData(fileData: any[]) {
   const firstLine = fileData[0];
 
@@ -57,24 +59,21 @@ function getTableData(fileData: any[]) {
 }
 
 const App: React.FC = () => {
-  // 步骤条
-  // const [currentStep, setCurrentStep] = useState(0);
-
-  const title_dict = {
-    姓名: "name",
-    考号: "id",
-    班级: "class",
-    总分: "total",
-    语文: "chinese",
-    数学: "math",
-    英语: "english",
-    物理: "wuli",
-    化学: "huaxue",
-    道法: "daofa",
-    历史: "lishi",
-    地理: "dili",
-    生物: "shengwu",
-  };
+  // const title_dict = {
+  //   姓名: "name",
+  //   考号: "id",
+  //   班级: "class",
+  //   总分: "total",
+  //   语文: "chinese",
+  //   数学: "math",
+  //   英语: "english",
+  //   物理: "wuli",
+  //   化学: "huaxue",
+  //   道法: "daofa",
+  //   历史: "lishi",
+  //   地理: "dili",
+  //   生物: "shengwu",
+  // };
 
   // store
   const currentStep = useScoreStore((state) => state.currentStep);
@@ -82,41 +81,8 @@ const App: React.FC = () => {
   const openDrawer = useScoreStore((state) => state.openDrawer);
   const scoreTitleIndex = useScoreStore((state) => state.scoreTitleIndex);
   const classTitleIndex = useScoreStore((state) => state.classTitleIndex);
-  const {
-    setCurrentStep,
-    setOpenDrawer,
-    setScoreTitleIndex,
-    setClassTitleIndex,
-  } = useScoreStore.getState();
-
-  // const scoreTitleDict = [
-  //   { label: "姓名", value: "name" },
-  //   { label: "考号", value: "id" },
-  //   { label: "班级", value: "class", required: true },
-  //   { label: "总分", value: "total" },
-  //   { label: "语文", value: "chinese" },
-  //   { label: "数学", value: "math" },
-  //   { label: "英语", value: "english" },
-  //   { label: "物理", value: "wuli" },
-  //   { label: "化学", value: "huaxue" },
-  //   { label: "道法", value: "daofa" },
-  //   { label: "历史", value: "lishi" },
-  //   { label: "地理", value: "dili" },
-  //   { label: "生物", value: "shengwu" },
-  // ];
-  // const classTitleDict = [
-  //   { label: "班级", value: "class", required: true },
-  //   { label: "语文", value: "chinese" },
-  //   { label: "数学", value: "math" },
-  //   { label: "英语", value: "english" },
-  //   { label: "物理", value: "wuli" },
-  //   { label: "化学", value: "huaxue" },
-  //   { label: "道法", value: "daofa" },
-  //   { label: "历史", value: "lishi" },
-  //   { label: "地理", value: "dili" },
-  //   { label: "生物", value: "shengwu" },
-  //   { label: "人数", value: "count", required: true },
-  // ];
+  const { setOpenDrawer, setScoreTitleIndex, setClassTitleIndex } =
+    useScoreStore.getState();
 
   // 表格数据
   const [scoreColumns, setScoreColumns] = useState<any[]>([]);
@@ -129,6 +95,7 @@ const App: React.FC = () => {
   const [classTitleOptions, setClassTitleOptions] = useState<any[]>([]);
   const classFormRef = React.useRef<FormInstance>(null);
 
+  // 选择表格文件
   async function selectFile() {
     const result = await selectOneExcelFile();
     if (!result) return;
@@ -152,9 +119,6 @@ const App: React.FC = () => {
       setScoreTitleOptions(data.titleOptions);
 
       setOpenDrawer(true);
-      // if (currentStep < 1) {
-      //   setCurrentStep(1);
-      // }
     } else if (tabKey === "班级信息表") {
       setClassColumns(data.columns);
       setClassTableData(data.tableData);
@@ -165,9 +129,6 @@ const App: React.FC = () => {
       setClassTitleOptions(data.titleOptions);
 
       setOpenDrawer(true);
-      // if (currentStep < 2) {
-      //   setCurrentStep(2);
-      // }
     }
   }
 
@@ -188,10 +149,13 @@ const App: React.FC = () => {
     {
       key: "参数配置",
       label: `参数配置`,
-      children: <Empty />,
+      children: <ParamsSetting />,
       disabled: tabKey != "参数配置" && openDrawer,
     },
   ];
+
+  // 计算结果
+  function computeResult() {}
 
   return (
     <>
@@ -246,8 +210,9 @@ const App: React.FC = () => {
                 <Button
                   disabled={currentStep < 2 || openDrawer}
                   icon={<SettingOutlined />}
+                  onClick={() => emit("save-score-setting")}
                 >
-                  配置
+                  确认配置
                 </Button>
               </div>
             )}
@@ -255,7 +220,7 @@ const App: React.FC = () => {
           <Col>
             {currentStep === 3 && (
               <Button
-                onClick={selectFile}
+                onClick={computeResult}
                 type="primary"
                 icon={<DotChartOutlined />}
               >
@@ -265,20 +230,7 @@ const App: React.FC = () => {
           </Col>
         </Row>
 
-        {/* <Button
-          onClick={selectFile}
-          type="primary"
-          disabled={currentStep == 0}
-          icon={<UploadOutlined />}
-        >
-          {tabIndex === "成绩表" && "选择成绩表"}
-          {tabIndex === "人数表" && "选择人数表"}
-          {tabIndex === "教师表" && "选择教师表"}
-        </Button> */}
-
         <TableTabs items={tabItems} />
-        {/* <ScoreTable /> */}
-        {/* <Table columns={columns} dataSource={tableData} /> */}
       </Space>
     </>
   );

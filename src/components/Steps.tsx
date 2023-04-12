@@ -1,9 +1,8 @@
 import { Steps } from "antd";
 
-function App({ items }: any) {
+function App() {
   // store
   const currentStep = useScoreStore((state) => state.currentStep);
-  // const { setTabKey } = useScoreStore.getState();
 
   const stepItems = [
     {
@@ -25,7 +24,7 @@ function App({ items }: any) {
     },
   ];
 
-  return <Steps current={currentStep} items={stepItems} />;
+  return <Steps current={currentStep} items={stepItems} type="default" />;
 }
 
 export default App;

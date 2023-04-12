@@ -86,10 +86,15 @@ declare type ScoreProps = {
 
   /**@name 成绩表字段是否必选 */
   scoreTitleRequired: ScoreTitleRequired;
-  /**@name 班级表字段是否必选 */
-  classTitleRequired: ClassTitleRequired;
   /**@name 成绩表标题索引 */
   scoreTitleIndex: ScoreTitleIndex;
+  /** 成绩表数据 */
+  scoreColumns: any[];
+  scoreTableData: any[];
+  scoreTitleOptions: any[];
+
+  /**@name 班级表字段是否必选 */
+  classTitleRequired: ClassTitleRequired;
   /**@name 班级表标题索引 */
   classTitleIndex: ClassTitleIndex;
 
@@ -97,6 +102,39 @@ declare type ScoreProps = {
   nextStep: () => void;
   setTabKey: (val: TabKey) => void;
   setOpenDrawer: (val: boolean) => void;
+
   setScoreTitleIndex: (val: TitleIndexDict) => void;
+  setScoreColumns: (val: any[]) => void;
+  setScoreTableData: (val: any[]) => void;
+  setScoreTitleOptions: (val: any[]) => void;
+
   setClassTitleIndex: (val: TitleIndexDict) => void;
+};
+
+/********************************** setting **********************************/
+
+/** 科目总分 */
+declare interface SubjectScore {
+  [key: string]: number;
+
+  语文: number;
+  数学: number;
+  英语: number;
+  物理: number;
+  化学: number;
+  道法: number;
+  历史: number;
+  地理: number;
+  生物: number;
+}
+declare type ScoreSetting = {
+  subjectScore: SubjectScore;
+  totalScore: number;
+  kindGood: number;
+  kindOk: number;
+
+  setSubjectScore: (val: SubjectScore) => void;
+  setTotalScore: (val: number) => void;
+  setKindGood: (val: number) => void;
+  setKindOk: (val: number) => void;
 };

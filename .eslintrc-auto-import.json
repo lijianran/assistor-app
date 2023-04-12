@@ -32,6 +32,7 @@
     "useMemo": true,
     "useReducer": true,
     "useRef": true,
+    "useScoreSettingStore": true,
     "useScoreStore": true,
     "useState": true,
     "useSyncExternalStore": true,
