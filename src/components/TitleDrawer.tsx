@@ -131,7 +131,7 @@ function App({ titleOptions, formRef, titleInit }: any) {
         配置
       </Button>
       <Drawer
-        title="配置成绩表"
+        title={"配置" + tabKey}
         mask={false}
         // width={500}
         closable={false}

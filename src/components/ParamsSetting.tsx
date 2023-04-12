@@ -1,6 +1,6 @@
 import React from "react";
 import { listen } from "@tauri-apps/api/event";
-import { Col, Form, InputNumber, Row, Card } from "antd";
+import { Space, Col, Form, InputNumber, Row, Card } from "antd";
 
 import type { FormInstance } from "antd/es/form";
 
@@ -15,6 +15,9 @@ function App() {
   const kindOk = useScoreSettingStore((state) => state.kindOk);
   const { setSubjectScore, setTotalScore, setKindGood, setKindOk } =
     useScoreSettingStore.getState();
+
+  // 表格
+  const settingFormRef = React.useRef<FormInstance>(null);
 
   // 单项分数
   const scoreInputItems = Object.keys(subjectScore).map((subject) => (
@@ -48,8 +51,6 @@ function App() {
     settingFormRef.current?.setFieldValue("总分", total);
   }
 
-  const settingFormRef = React.useRef<FormInstance>(null);
-
   useEffect(() => {
     // 保存参数设置
     listen("save-score-setting", (event) => {
@@ -74,7 +75,7 @@ function App() {
     setTotalScore(values["总分"]);
     setKindGood(values["优秀"]);
     setKindOk(values["及格"]);
-    if (currentStep < 2) {
+    if (currentStep < 3) {
       setCurrentStep(3);
     }
   };
@@ -100,13 +101,13 @@ function App() {
         }}
         validateMessages={{ required: "请配置 '${name}'" }}
       >
-        <Row gutter={16}>
-          <Col span={12}>
+        <Row gutter={[16, 16]}>
+          <Col sm={12}>
             <Card title="" bordered={true} hoverable>
               {scoreInputItems}
             </Card>
           </Col>
-          <Col span={12}>
+          <Col sm={12}>
             <Card title="" bordered={true} hoverable>
               <Form.Item name="总分" label="总分" rules={[{ required: true }]}>
                 <InputNumber

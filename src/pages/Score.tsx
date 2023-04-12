@@ -58,7 +58,7 @@ function getTableData(fileData: any[]) {
   };
 }
 
-const App: React.FC = () => {
+function App() {
   // const title_dict = {
   //   姓名: "name",
   //   考号: "id",
@@ -180,7 +180,6 @@ const App: React.FC = () => {
                   <TitleDrawer
                     titleOptions={scoreTitleOptions}
                     titleInit={scoreTitleIndex}
-                    // titleDict={scoreTitleDict}
                     formRef={scoreFormRef}
                   />
                 )}
@@ -199,7 +198,6 @@ const App: React.FC = () => {
                   <TitleDrawer
                     titleOptions={classTitleOptions}
                     titleInit={classTitleIndex}
-                    // titleDict={classTitleDict}
                     formRef={classFormRef}
                   />
                 )}
@@ -234,6 +232,6 @@ const App: React.FC = () => {
       </Space>
     </>
   );
-};
+}
 
 export default App;
