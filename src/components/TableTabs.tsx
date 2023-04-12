@@ -2,12 +2,16 @@ import React from "react";
 import { Tabs } from "antd";
 import type { TabsProps } from "antd";
 
-// const onChange = (key: string) => {
-//   console.log(key);
-// };
+function App({ items }: any) {
+  // store
+  const tabKey = useScoreStore((state) => state.tabKey);
+  const { setTabKey } = useScoreStore.getState();
 
-function App({ tabIndex, changeTab, items }: any) {
-  return <Tabs defaultActiveKey={tabIndex} items={items} onChange={changeTab} />;
+  function changeTab(key: string) {
+    setTabKey(key as TabKey);
+  }
+
+  return <Tabs activeKey={tabKey} items={items} onTabClick={changeTab} />;
 }
 
 export default App;

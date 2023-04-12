@@ -12,15 +12,25 @@ import {
   Space,
 } from "antd";
 
-import TitleForm from "../components/TitleForm";
-
 const { Option } = Select;
 
 function App({ titleOptions, formRef, titleInit }: any) {
-  const [open, setOpen] = useState(false);
+  // const [open, setOpen] = useState(false);
+  // store
+  const tabKey = useScoreStore((state) => state.tabKey);
+  const currentStep = useScoreStore((state) => state.currentStep);
+  const openDrawer = useScoreStore((state) => state.openDrawer);
+  const {
+    scoreTitleRequired,
+    classTitleRequired,
+    setCurrentStep,
+    setTabKey,
+    setOpenDrawer,
+  } = useScoreStore.getState();
 
   const showDrawer = () => {
-    setOpen(true);
+    // setOpen(true);
+    setOpenDrawer(true);
   };
 
   const onClose = () => {
@@ -32,78 +42,107 @@ function App({ titleOptions, formRef, titleInit }: any) {
   };
 
   const onFinish = (values: any) => {
-    console.log("Success:", values);
+    // console.log("Success:", values);
+    // console.log(formRef.current.getFieldsValue());
 
-    console.log(formRef.current.getFieldsValue());
-
-    setOpen(false);
+    // setOpen(false);
+    setOpenDrawer(false);
+    // nextStep();
+    if (tabKey === "成绩数据表") {
+      if (currentStep < 1) {
+        setCurrentStep(1);
+        setTabKey("班级信息表");
+      }
+    }
+    if (tabKey === "班级信息表") {
+      if (currentStep < 2) {
+        setCurrentStep(2);
+        setTabKey("参数配置");
+      }
+    }
   };
 
   const onFinishFailed = (errorInfo: any) => {
     console.log("Failed:", errorInfo);
   };
 
-  //   const optionItems = titleOptions.map((item: any) => (
-  //     <Option key={item.value}>{item.label}</Option>
-  //   ));
+  // const titleDict = [
+  //   { label: "姓名", value: "name" },
+  //   { label: "考号", value: "id" },
+  //   { label: "班级", value: "class", required: true },
+  //   { label: "总分", value: "total" },
+  //   { label: "语文", value: "chinese" },
+  //   { label: "数学", value: "math" },
+  //   { label: "英语", value: "english" },
+  //   { label: "物理", value: "wuli" },
+  //   { label: "化学", value: "huaxue" },
+  //   { label: "道法", value: "daofa" },
+  //   { label: "历史", value: "lishi" },
+  //   { label: "地理", value: "dili" },
+  //   { label: "生物", value: "shengwu" },
+  // ];
+  // const titleList = [
+  //   "姓名",
+  //   "考号",
+  //   "班级",
+  //   "总分",
+  //   "语文",
+  //   "数学",
+  //   "英语",
+  //   "物理",
+  //   "化学",
+  //   "道法",
+  //   "历史",
+  //   "地理",
+  //   "生物",
+  // ];
+  function handleValidator(rule: any, value: any) {
+    const values: any = formRef.current.getFieldsValue();
 
-  //   const titleDict: { [key: string]: string } = {
-  //     姓名: "name",
-  //     考号: "id",
-  //     班级: "class",
-  //     总分: "total",
-  //     语文: "chinese",
-  //     数学: "math",
-  //     英语: "english",
-  //     物理: "wuli",
-  //     化学: "huaxue",
-  //     道法: "daofa",
-  //     历史: "lishi",
-  //     地理: "dili",
-  //     生物: "shengwu",
-  //   };
-  const titleDict = [
-    { label: "姓名", value: "name" },
-    { label: "考号", value: "id" },
-    { label: "班级", value: "class", required: true },
-    { label: "总分", value: "total" },
-    { label: "语文", value: "chinese" },
-    { label: "数学", value: "math" },
-    { label: "英语", value: "english" },
-    { label: "物理", value: "wuli" },
-    { label: "化学", value: "huaxue" },
-    { label: "道法", value: "daofa" },
-    { label: "历史", value: "lishi" },
-    { label: "地理", value: "dili" },
-    { label: "生物", value: "shengwu" },
-  ];
-  const titleList = [
-    "姓名",
-    "考号",
-    "班级",
-    "总分",
-    "语文",
-    "数学",
-    "英语",
-    "物理",
-    "化学",
-    "道法",
-    "历史",
-    "地理",
-    "生物",
-  ];
-  const selectItems = titleDict.map((item: any) => (
+    if (tabKey === "成绩数据表") {
+      if (scoreTitleRequired[rule.field] && value === -1) {
+        return Promise.reject("必选字段");
+      }
+    }
+    if (tabKey === "班级信息表") {
+      if (classTitleRequired[rule.field] && value === -1) {
+        return Promise.reject("必选字段");
+      }
+    }
+
+    for (const key in values) {
+      if (value === -1 || rule.field === key) {
+        continue;
+      }
+      if (Object.prototype.hasOwnProperty.call(values, key)) {
+        const selectedIndex = values[key];
+        if (selectedIndex === value) {
+          return Promise.reject("重复选择");
+        }
+      }
+    }
+
+    return Promise.resolve();
+  }
+
+  let titleDict: any = {};
+  if (tabKey === "成绩数据表") {
+    titleDict = scoreTitleRequired;
+  }
+  if (tabKey === "班级信息表") {
+    titleDict = classTitleRequired;
+  }
+  const selectItems = Object.keys(titleDict).map((item: any) => (
     <Form.Item
-      key={item.label}
-      name={item.label}
-      label={item.label}
-      //   required={item.required}
-      rules={[{ required: item.required }]}
+      key={item}
+      name={item}
+      label={item}
+      rules={[{ required: titleDict[item] }, { validator: handleValidator }]}
     >
-      <Select allowClear>
-        {/* <Option key={-1} value={-1}>
+      <Select>
+        <Option key={-1} value={-1}>
           无
-        </Option> */}
+        </Option>
         {titleOptions.map((item: any) => (
           <Option key={item.value} value={item.value}>
             {item.label}
@@ -124,11 +163,12 @@ function App({ titleOptions, formRef, titleInit }: any) {
       </Button>
       <Drawer
         title="配置成绩表"
+        mask={false}
         // width={500}
         closable={false}
         onClose={onClose}
-        open={open}
-        // bodyStyle={{ paddingBottom: 80 }}
+        open={openDrawer}
+        bodyStyle={{ paddingBottom: 80 }}
         // placement="bottom"
         extra={
           <Space>
@@ -152,38 +192,7 @@ function App({ titleOptions, formRef, titleInit }: any) {
           autoComplete="off"
           validateMessages={validateMessages}
         >
-          {/* <Form.Item name="gender" label="Gender" rules={[{ required: false }]}>
-            <Select
-              placeholder=""
-              //   onChange={onGenderChange}
-              allowClear
-            >
-              {optionItems}
-            </Select>
-          </Form.Item> */}
           {selectItems}
-
-          {/* <Form.Item
-            label="Username"
-            name="username"
-            rules={[{ required: true, message: "Please input your username!" }]}
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item
-            label="Password"
-            name="password"
-            rules={[{ required: true, message: "Please input your password!" }]}
-          >
-            <Input.Password />
-          </Form.Item> */}
-
-          {/* <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-            <Button type="primary" htmlType="submit">
-              Submit
-            </Button>
-          </Form.Item> */}
         </Form>
       </Drawer>
     </>

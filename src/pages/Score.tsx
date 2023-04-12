@@ -1,7 +1,11 @@
 import React from "react";
-import { UploadOutlined, DotChartOutlined } from "@ant-design/icons";
+import {
+  UploadOutlined,
+  DotChartOutlined,
+  SettingOutlined,
+} from "@ant-design/icons";
 import type { UploadProps, TabsProps } from "antd";
-import { Button, Typography, Col, Row, Space, Table } from "antd";
+import { Button, Typography, Col, Row, Space, Table, Empty } from "antd";
 
 import Steps from "../components/Steps";
 import ScoreTable from "../components/ScoreTable";
@@ -13,28 +17,48 @@ import type { FormInstance } from "antd/es/form";
 
 const { Title } = Typography;
 
+function getTableData(fileData: any[]) {
+  const firstLine = fileData[0];
+
+  let titleOptions = [];
+  let titleInit: { [key: string]: number } = {};
+  let columns = [];
+  const keys = Object.keys(firstLine);
+  for (let index = 0; index < keys.length; index++) {
+    const key = keys[index];
+
+    titleOptions.push({
+      label: "第" + (index + 1) + "列【" + key + "】",
+      value: index,
+    });
+
+    titleInit[key] = index;
+
+    columns.push({
+      title: key,
+      dataIndex: key,
+      key: key,
+    });
+  }
+
+  let tableData = [];
+  for (let index = 0; index < fileData.length; index++) {
+    let element = fileData[index];
+    element["key"] = index + 1;
+    tableData.push(element);
+  }
+
+  return {
+    columns: columns,
+    tableData: tableData,
+    titleInit: titleInit,
+    titleOptions: titleOptions,
+  };
+}
+
 const App: React.FC = () => {
   // 步骤条
-  const [currentStep, setCurrentStep] = useState(0);
-  const stepItems = [
-    {
-      title: "步骤1",
-      description: "上传成绩数据表",
-    },
-    {
-      title: "步骤2",
-      description: "上传班级信息表",
-      // subTitle: "Left 00:00:08",
-    },
-    {
-      title: "步骤3",
-      description: "配置参数",
-    },
-    {
-      title: "步骤4",
-      description: "统计结果",
-    },
-  ];
+  // const [currentStep, setCurrentStep] = useState(0);
 
   const title_dict = {
     姓名: "name",
@@ -52,39 +76,47 @@ const App: React.FC = () => {
     生物: "shengwu",
   };
 
-  // title 选择
-  const [scoreTitleInit, setScoreTitleInit] = useState<{
-    [key: string]: number;
-  }>({
-    姓名: -1,
-    考号: -1,
-    班级: -1,
-    总分: -1,
-    语文: -1,
-    数学: -1,
-    英语: -1,
-    物理: -1,
-    化学: -1,
-    道法: -1,
-    历史: -1,
-    地理: -1,
-    生物: -1,
-  });
-  const [classTitleInit, setClassTitleInit] = useState<{
-    [key: string]: number;
-  }>({
-    班级: -1,
-    语文: -1,
-    数学: -1,
-    英语: -1,
-    物理: -1,
-    化学: -1,
-    道法: -1,
-    历史: -1,
-    地理: -1,
-    生物: -1,
-    人数: -1,
-  });
+  // store
+  const currentStep = useScoreStore((state) => state.currentStep);
+  const tabKey = useScoreStore((state) => state.tabKey);
+  const openDrawer = useScoreStore((state) => state.openDrawer);
+  const scoreTitleIndex = useScoreStore((state) => state.scoreTitleIndex);
+  const classTitleIndex = useScoreStore((state) => state.classTitleIndex);
+  const {
+    setCurrentStep,
+    setOpenDrawer,
+    setScoreTitleIndex,
+    setClassTitleIndex,
+  } = useScoreStore.getState();
+
+  // const scoreTitleDict = [
+  //   { label: "姓名", value: "name" },
+  //   { label: "考号", value: "id" },
+  //   { label: "班级", value: "class", required: true },
+  //   { label: "总分", value: "total" },
+  //   { label: "语文", value: "chinese" },
+  //   { label: "数学", value: "math" },
+  //   { label: "英语", value: "english" },
+  //   { label: "物理", value: "wuli" },
+  //   { label: "化学", value: "huaxue" },
+  //   { label: "道法", value: "daofa" },
+  //   { label: "历史", value: "lishi" },
+  //   { label: "地理", value: "dili" },
+  //   { label: "生物", value: "shengwu" },
+  // ];
+  // const classTitleDict = [
+  //   { label: "班级", value: "class", required: true },
+  //   { label: "语文", value: "chinese" },
+  //   { label: "数学", value: "math" },
+  //   { label: "英语", value: "english" },
+  //   { label: "物理", value: "wuli" },
+  //   { label: "化学", value: "huaxue" },
+  //   { label: "道法", value: "daofa" },
+  //   { label: "历史", value: "lishi" },
+  //   { label: "地理", value: "dili" },
+  //   { label: "生物", value: "shengwu" },
+  //   { label: "人数", value: "count", required: true },
+  // ];
 
   // 表格数据
   const [scoreColumns, setScoreColumns] = useState<any[]>([]);
@@ -97,142 +129,127 @@ const App: React.FC = () => {
   const [classTitleOptions, setClassTitleOptions] = useState<any[]>([]);
   const classFormRef = React.useRef<FormInstance>(null);
 
-  // const [studentColumns, setStudentColumns] = useState<any[]>([]);
-  // const [studentTableData, setStudentTableData] = useState<any[]>([]);
-
-  // const [teacherColumns, setTeacherColumns] = useState<any[]>([]);
-  // const [teacherTableData, setTeacherTableData] = useState<any[]>([]);
-
-  let scoreData: Array<{ [key: string]: any }> = [];
-  function getTableData() {
-    const firstLine = scoreData[0];
-
-    let titleOptions = [];
-    let titleInit: { [key: string]: number } = {};
-    let columns = [];
-    const keys = Object.keys(firstLine);
-    for (let index = 0; index < keys.length; index++) {
-      const key = keys[index];
-      console.log(key);
-
-      titleOptions.push({
-        label: "第" + (index + 1) + "列【" + key + "】",
-        value: index,
-      });
-
-      titleInit[key] = index;
-
-      columns.push({
-        title: key,
-        dataIndex: key,
-        key: key,
-      });
-    }
-
-    let tableData = [];
-    for (let index = 0; index < scoreData.length; index++) {
-      let element = scoreData[index];
-      element["key"] = index + 1;
-      tableData.push(element);
-    }
-
-    return {
-      columns: columns,
-      tableData: tableData,
-      titleInit: titleInit,
-      titleOptions: titleOptions,
-    };
-  }
   async function selectFile() {
     const result = await selectOneExcelFile();
     if (!result) return;
 
-    scoreData = await readExcelFile(result);
+    const fileData = await readExcelFile(result);
 
-    if (!scoreData) {
+    if (!fileData) {
       errorMessage("读取失败");
       return;
     }
+    const data = getTableData(fileData);
+    successMessage("读取成功");
 
-    const data = getTableData();
-
-    if (tabIndex === "成绩数据表") {
+    if (tabKey === "成绩数据表") {
       setScoreColumns(data.columns);
       setScoreTableData(data.tableData);
-      setScoreTitleInit(data.titleInit);
+
+      // setScoreTitleInit(data.titleInit);
+      setScoreTitleIndex(data.titleInit);
+
       setScoreTitleOptions(data.titleOptions);
-      if (currentStep < 1) {
-        setCurrentStep(1);
-      }
-    } else if (tabIndex === "班级信息表") {
+
+      setOpenDrawer(true);
+      // if (currentStep < 1) {
+      //   setCurrentStep(1);
+      // }
+    } else if (tabKey === "班级信息表") {
       setClassColumns(data.columns);
       setClassTableData(data.tableData);
-      setClassTitleInit(data.titleInit);
+
+      // setClassTitleInit(data.titleInit);
+      setClassTitleIndex(data.titleInit);
+
       setClassTitleOptions(data.titleOptions);
-      if (currentStep < 2) {
-        setCurrentStep(2);
-      }
+
+      setOpenDrawer(true);
+      // if (currentStep < 2) {
+      //   setCurrentStep(2);
+      // }
     }
   }
 
   // 表格 tab
-  const [tabIndex, setTabIndex] = useState("成绩数据表");
   const tabItems: TabsProps["items"] = [
     {
       key: "成绩数据表",
       label: `成绩数据表`,
       children: <Table columns={scoreColumns} dataSource={scoreTableData} />,
+      disabled: tabKey != "成绩数据表" && openDrawer,
     },
     {
       key: "班级信息表",
       label: `班级信息表`,
       children: <Table columns={classColumns} dataSource={classTableData} />,
+      disabled: tabKey != "班级信息表" && openDrawer,
+    },
+    {
+      key: "参数配置",
+      label: `参数配置`,
+      children: <Empty />,
+      disabled: tabKey != "参数配置" && openDrawer,
     },
   ];
-  function changeTab(tabKey: string) {
-    setTabIndex(tabKey);
-  }
 
   return (
     <>
       <Title>成绩统计</Title>
 
       <Space direction="vertical" size={"large"} wrap>
-        <Steps current={currentStep} items={stepItems} />
+        <Steps />
 
         <Row justify="space-between">
           <Col>
-            {tabIndex === "成绩数据表" && (
+            {tabKey === "成绩数据表" && (
               <div>
-                <Button onClick={selectFile} icon={<UploadOutlined />}>
+                <Button
+                  onClick={selectFile}
+                  icon={<UploadOutlined />}
+                  disabled={openDrawer}
+                >
                   选择成绩表
                 </Button>
 
-                {currentStep > 0 && (
+                {scoreTableData.length != 0 && (
                   <TitleDrawer
                     titleOptions={scoreTitleOptions}
-                    titleInit={scoreTitleInit}
+                    titleInit={scoreTitleIndex}
+                    // titleDict={scoreTitleDict}
                     formRef={scoreFormRef}
                   />
                 )}
               </div>
             )}
-            {tabIndex === "班级信息表" && (
-              <Button
-                onClick={selectFile}
-                disabled={currentStep < 1}
-                icon={<UploadOutlined />}
-              >
-                选择班级表
-              </Button>
+            {tabKey === "班级信息表" && (
+              <div>
+                <Button
+                  onClick={selectFile}
+                  disabled={currentStep < 1 || openDrawer}
+                  icon={<UploadOutlined />}
+                >
+                  选择班级表
+                </Button>
+                {classTableData.length != 0 && (
+                  <TitleDrawer
+                    titleOptions={classTitleOptions}
+                    titleInit={classTitleIndex}
+                    // titleDict={classTitleDict}
+                    formRef={classFormRef}
+                  />
+                )}
+              </div>
             )}
-
-            {currentStep > 1 && (
-              <TitleDrawer
-                titleOptions={classTitleOptions}
-                titleInit={classTitleInit}
-                formRef={classFormRef}
-              />
+            {tabKey === "参数配置" && (
+              <div>
+                <Button
+                  disabled={currentStep < 2 || openDrawer}
+                  icon={<SettingOutlined />}
+                >
+                  配置
+                </Button>
+              </div>
             )}
           </Col>
           <Col>
@@ -259,7 +276,7 @@ const App: React.FC = () => {
           {tabIndex === "教师表" && "选择教师表"}
         </Button> */}
 
-        <TableTabs tabIndex={tabIndex} changeTab={changeTab} items={tabItems} />
+        <TableTabs items={tabItems} />
         {/* <ScoreTable /> */}
         {/* <Table columns={columns} dataSource={tableData} /> */}
       </Space>

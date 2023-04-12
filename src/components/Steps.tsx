@@ -1,9 +1,31 @@
-import React from "react";
 import { Steps } from "antd";
 
-const description = "This is a description.";
-function App({ current, items }: any) {
-  return <Steps current={current} items={items} />;
+function App({ items }: any) {
+  // store
+  const currentStep = useScoreStore((state) => state.currentStep);
+  // const { setTabKey } = useScoreStore.getState();
+
+  const stepItems = [
+    {
+      title: "步骤1",
+      description: "上传成绩数据表",
+    },
+    {
+      title: "步骤2",
+      description: "上传班级信息表",
+      // subTitle: "Left 00:00:08",
+    },
+    {
+      title: "步骤3",
+      description: "配置参数",
+    },
+    {
+      title: "步骤4",
+      description: "统计结果",
+    },
+  ];
+
+  return <Steps current={currentStep} items={stepItems} />;
 }
 
 export default App;

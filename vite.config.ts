@@ -23,7 +23,7 @@ export default defineConfig(async () => ({
         // "./src/axios/*",
         // "./src/plugins/*",
         // "./src/router/*",
-        // "./src/store/*",
+        "./src/store/*",
         "./src/utils/*",
       ],
     }),
