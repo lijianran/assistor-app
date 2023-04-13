@@ -1,4 +1,10 @@
-import { exists, createDir, removeFile } from "@tauri-apps/api/fs";
+import {
+  exists,
+  createDir,
+  removeFile,
+  readTextFile,
+  BaseDirectory,
+} from "@tauri-apps/api/fs";
 
 // 是否存在
 export async function isNotExist(path: string) {
@@ -14,4 +20,10 @@ export async function createDirectory(path: string) {
 // 删除文件
 export async function deleteFile(file_path: string) {
   await removeFile(file_path);
+}
+
+// 读取文本文件
+export async function readTextFileData(file_path: string) {
+  const contents = await readTextFile(file_path);
+  return contents;
 }

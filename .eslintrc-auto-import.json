@@ -33,6 +33,7 @@
     "openPath": true,
     "openPathDir": true,
     "readExcelFile": true,
+    "readTextFileData": true,
     "selectDirectory": true,
     "selectOneExcelFile": true,
     "selectOneImageFile": true,

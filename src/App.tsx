@@ -1,23 +1,14 @@
 import {
   CrownOutlined,
   DotChartOutlined,
-  InfoCircleOutlined,
-  MergeCellsOutlined,
-  QuestionCircleOutlined,
+  TeamOutlined,
   TabletOutlined,
-  UserOutlined,
+  UserSwitchOutlined,
 } from "@ant-design/icons";
 import { ProLayout, PageContainer, ProCard } from "@ant-design/pro-components";
-import { Button, Result } from "antd";
-import { useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import { emit } from "@tauri-apps/api/event";
-import { isRegistered, register } from "@tauri-apps/api/globalShortcut";
-
-// import Home from "../App";
-// import ErrorPage from "./error-page";
 
 export default () => {
   const location = useLocation();
@@ -74,22 +65,19 @@ export default () => {
             // component: <Home />,
           },
           {
-            name: "测试二级菜单",
-            icon: <TabletOutlined />,
-            path: "/list",
-            component: "./ListTableList",
+            name: "班级管理",
+            icon: <UserSwitchOutlined />,
+            path: "/class",
             routes: [
               {
-                path: "/list/sub-page2",
-                name: "二级列表页面",
-                icon: <CrownOutlined />,
-                component: "./Welcome",
+                path: "/class/shuffle",
+                name: "1. 学生分班",
+                icon: <TeamOutlined />,
               },
               {
-                path: "/list/sub-page3",
-                name: "三级列表页面",
+                path: "/class/adjust",
+                name: "2. 分班调整",
                 icon: <CrownOutlined />,
-                component: "./Welcome",
               },
             ],
           },
