@@ -3,6 +3,7 @@ import {
   createDir,
   removeFile,
   readTextFile,
+  readDir,
   BaseDirectory,
 } from "@tauri-apps/api/fs";
 
@@ -26,4 +27,10 @@ export async function deleteFile(file_path: string) {
 export async function readTextFileData(file_path: string) {
   const contents = await readTextFile(file_path);
   return contents;
+}
+
+// 读取目录信息
+export async function readDirectoryData(path: string) {
+  const entries = await readDir(path, { recursive: true });
+  return entries;
 }

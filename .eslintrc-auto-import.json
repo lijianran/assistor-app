@@ -30,6 +30,8 @@
     "memo": true,
     "openPath": true,
     "openPathDir": true,
+    "orderBy": true,
+    "readDirectoryData": true,
     "readExcelFile": true,
     "readTextFileData": true,
     "selectDirectory": true,

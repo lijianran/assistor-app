@@ -4,14 +4,15 @@ import {
   DotChartOutlined,
   AreaChartOutlined,
   TableOutlined,
+  QuestionCircleOutlined,
   BorderlessTableOutlined,
   SettingOutlined,
   FolderOpenOutlined,
   PoweroffOutlined,
 } from "@ant-design/icons";
-import { Button, Typography, Col, Row, Space, Table, Empty } from "antd";
+import { Tour, Button, Typography, Col, Row, Space, Table, Empty } from "antd";
 
-import type { TabsProps } from "antd";
+import type { TabsProps, TourProps } from "antd";
 
 import _ from "lodash";
 import { emit } from "@tauri-apps/api/event";
@@ -20,6 +21,7 @@ import Steps from "../components/Steps";
 import TableTabs from "../components/TableTabs";
 import TitleDrawer from "../components/TitleDrawer";
 import ParamsSetting from "../components/ParamsSetting";
+import ScoreResultList from "../components/ScoreResultList";
 
 const { Title } = Typography;
 
@@ -96,7 +98,10 @@ function App() {
   async function selectFile() {
     setButtonLoading(true);
     const result = await selectOneExcelFile();
-    if (!result) return;
+    if (!result) {
+      setButtonLoading(false);
+      return;
+    }
 
     const fileData = await readExcelFile(result);
     setButtonLoading(false);
@@ -154,11 +159,12 @@ function App() {
     {
       key: "计算结果",
       label: `计算结果`,
-      children: <Empty />,
+      children: <ScoreResultList />,
       disabled: tabKey != "计算结果" && openDrawer,
     },
   ];
 
+  // 打开文件夹
   async function openScoreFileDir() {
     const documentDirPath = await getDocumentDir();
     const appFileDir = await joinPath(documentDirPath, "教务软件数据");
@@ -399,7 +405,15 @@ function App() {
 
   return (
     <>
-      <Title>成绩统计</Title>
+      <Title>
+        成绩统计
+        <Button
+          type="text"
+          shape="circle"
+          icon={<QuestionCircleOutlined />}
+          onClick={() => {}}
+        />
+      </Title>
 
       <Space direction="vertical" size={"large"} wrap>
         <Steps />
@@ -429,6 +443,7 @@ function App() {
                 >
                   选择班级表
                 </Button>
+
                 {classTableData.length != 0 && <TitleDrawer />}
               </div>
             )}

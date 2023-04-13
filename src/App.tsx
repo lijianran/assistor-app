@@ -2,9 +2,16 @@ import {
   CrownOutlined,
   DotChartOutlined,
   TeamOutlined,
+  UserOutlined,
   TabletOutlined,
   UserSwitchOutlined,
+  InfoCircleOutlined,
+  QuestionCircleOutlined,
+  MergeCellsOutlined,
+  ReloadOutlined,
+  SettingOutlined,
 } from "@ant-design/icons";
+
 import { ProLayout, PageContainer, ProCard } from "@ant-design/pro-components";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 
@@ -13,6 +20,14 @@ import { emit } from "@tauri-apps/api/event";
 export default () => {
   const location = useLocation();
   const navigate = useNavigate();
+
+  function flush() {
+    navigate(0);
+  }
+
+  function goHome() {
+    navigate("/");
+  }
 
   useEffect(() => {
     window.addEventListener("keydown", (event: KeyboardEvent) => {
@@ -24,10 +39,10 @@ export default () => {
       }
 
       if (key === "r") {
-        navigate(0);
+        flush();
         event.preventDefault();
       } else if (key === "e") {
-        navigate("/");
+        goHome();
       } else if (key === "d") {
         emit("open_devtools");
       } else {
@@ -87,18 +102,20 @@ export default () => {
         pathname: location.pathname,
       }}
       waterMarkProps={{
-        content: "Pro Layout",
+        content: "Assistor",
       }}
-      // avatarProps={{
-      //   icon: <UserOutlined />,
-      //   size: "small",
-      //   title: "lijianran",
-      // }}
-      // actionsRender={() => [
-      //   <InfoCircleOutlined key="InfoCircleOutlined" />,
-      //   <QuestionCircleOutlined key="QuestionCircleOutlined" />,
-      //   <MergeCellsOutlined key="MergeCellsOutlined" />,
-      // ]}
+      avatarProps={{
+        icon: <UserOutlined />,
+        size: "small",
+        title: "User",
+      }}
+      actionsRender={() => [
+        <ReloadOutlined key="ReloadOutlined" onClick={flush} />,
+        <InfoCircleOutlined key="InfoCircleOutlined" />,
+        // <SettingOutlined />,
+        <QuestionCircleOutlined key="QuestionCircleOutlined" />,
+        // <MergeCellsOutlined key="MergeCellsOutlined" />,
+      ]}
       // menuFooterRender={(props: any) => {
       //   if (props?.collapsed) return undefined;
       //   return (
@@ -113,7 +130,7 @@ export default () => {
       //     </p>
       //   );
       // }}
-      onMenuHeaderClick={(e: any) => console.log(e)}
+      onMenuHeaderClick={(e: any) => goHome()}
       menuItemRender={(item: any, dom: any) => (
         <Link to={item.path}>{dom}</Link>
       )}
