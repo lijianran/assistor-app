@@ -68,6 +68,7 @@ const tabStepMap = {
   成绩数据表: 0,
   班级信息表: 1,
   参数配置: 2,
+  计算结果: 3,
 };
 
 export const useScoreStore = create<ScoreProps>((set, get) => ({
@@ -83,6 +84,7 @@ export const useScoreStore = create<ScoreProps>((set, get) => ({
 
   classTitleRequired: classRequireDict,
   classTitleIndex: initClassTitle(),
+  classTitleOptions: [],
 
   setCurrentStep(val) {
     set({ currentStep: val });
@@ -116,6 +118,9 @@ export const useScoreStore = create<ScoreProps>((set, get) => ({
   },
   setScoreTitleOptions(val) {
     set({ scoreTitleOptions: val });
+  },
+  setClassTitleOptions(val) {
+    set({ classTitleOptions: val });
   },
 
   setClassTitleIndex: (val) => {

@@ -1,7 +1,7 @@
 declare type TitleIndexDict = { [key: string]: string };
 
 declare type Step = 0 | 1 | 2 | 3 | 4;
-declare type TabKey = "成绩数据表" | "班级信息表" | "参数配置";
+declare type TabKey = "成绩数据表" | "班级信息表" | "参数配置" | "计算结果";
 
 /** 成绩表字段是否必选 */
 declare interface ScoreTitleRequired {
@@ -98,6 +98,8 @@ declare type ScoreProps = {
   /**@name 班级表标题索引 */
   classTitleIndex: ClassTitleIndex;
 
+  classTitleOptions: any[];
+
   setCurrentStep: (val: Step) => void;
   nextStep: () => void;
   setTabKey: (val: TabKey) => void;
@@ -107,6 +109,7 @@ declare type ScoreProps = {
   setScoreColumns: (val: any[]) => void;
   setScoreTableData: (val: any[]) => void;
   setScoreTitleOptions: (val: any[]) => void;
+  setClassTitleOptions: (val: any[]) => void;
 
   setClassTitleIndex: (val: TitleIndexDict) => void;
 };

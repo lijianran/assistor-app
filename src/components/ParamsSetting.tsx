@@ -7,7 +7,7 @@ import type { FormInstance } from "antd/es/form";
 function App() {
   // store
   const currentStep = useScoreStore((state) => state.currentStep);
-  const { setCurrentStep } = useScoreStore.getState();
+  const { setCurrentStep, setTabKey } = useScoreStore.getState();
 
   const subjectScore = useScoreSettingStore((state) => state.subjectScore);
   const totalScore = useScoreSettingStore((state) => state.totalScore);
@@ -77,6 +77,7 @@ function App() {
     setKindOk(values["及格"]);
     if (currentStep < 3) {
       setCurrentStep(3);
+      setTabKey("计算结果");
     }
   };
 

@@ -5,5 +5,5 @@ export function currentTime() {
 }
 
 export function timeDirName() {
-  return dayjs(`${new Date()}`).format("YYYYMMDDHHmmss");
+  return dayjs(`${new Date()}`).format("YYYY-MM-DD_HH-mm-ss");
 }

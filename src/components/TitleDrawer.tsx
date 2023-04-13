@@ -15,11 +15,15 @@ import type { FormInstance } from "antd/es/form";
 
 const { Option } = Select;
 
-function App({ titleOptions, titleInit }: any) {
+function App() {
   // store
   const tabKey = useScoreStore((state) => state.tabKey);
   const currentStep = useScoreStore((state) => state.currentStep);
   const openDrawer = useScoreStore((state) => state.openDrawer);
+  const scoreTitleIndex = useScoreStore((state) => state.scoreTitleIndex);
+  const classTitleIndex = useScoreStore((state) => state.classTitleIndex);
+  const scoreTitleOptions = useScoreStore((state) => state.scoreTitleOptions);
+  const classTitleOptions = useScoreStore((state) => state.classTitleOptions);
   const {
     scoreTitleRequired,
     classTitleRequired,
@@ -103,14 +107,25 @@ function App({ titleOptions, titleInit }: any) {
     return Promise.resolve();
   }
 
+  let titleInit = {};
   let titleDict: any = {};
+  let titleOptions: any = {};
   if (tabKey === "成绩数据表") {
     titleDict = scoreTitleRequired;
+    titleOptions = scoreTitleOptions;
+    titleInit = scoreTitleIndex;
   }
   if (tabKey === "班级信息表") {
     titleDict = classTitleRequired;
+    titleOptions = classTitleOptions;
+    titleInit = classTitleIndex;
   }
-  const selectItems = Object.keys(titleDict).map((item: any) => (
+
+  useEffect(() => {
+    formRef.current?.resetFields();
+  });
+
+  let selectItems = Object.keys(titleDict).map((item: any) => (
     <Form.Item
       key={item}
       name={item}

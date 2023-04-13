@@ -2,7 +2,12 @@ import React from "react";
 import {
   UploadOutlined,
   DotChartOutlined,
+  AreaChartOutlined,
+  TableOutlined,
+  BorderlessTableOutlined,
   SettingOutlined,
+  FolderOpenOutlined,
+  PoweroffOutlined,
 } from "@ant-design/icons";
 import { Button, Typography, Col, Row, Space, Table, Empty } from "antd";
 
@@ -26,9 +31,6 @@ function getTableData(fileData: any[]) {
   let titleInit: { [key: string]: string } = {};
   let columns = [];
   const keys = Object.keys(firstLine);
-  // console.log(firstLine);
-  // console.log(keys);
-
   for (let index = 0; index < keys.length; index++) {
     const key = keys[index];
 
@@ -73,6 +75,8 @@ function App() {
     setOpenDrawer,
     setScoreTitleIndex,
     setClassTitleIndex,
+    setScoreTitleOptions,
+    setClassTitleOptions,
   } = useScoreStore.getState();
 
   const subjectScore = useScoreSettingStore((state) => state.subjectScore);
@@ -82,18 +86,20 @@ function App() {
   // 表格数据
   const [scoreColumns, setScoreColumns] = useState<any[]>([]);
   const [scoreTableData, setScoreTableData] = useState<any[]>([]);
-  const [scoreTitleOptions, setScoreTitleOptions] = useState<any[]>([]);
 
   const [classColumns, setClassColumns] = useState<any[]>([]);
   const [classTableData, setClassTableData] = useState<any[]>([]);
-  const [classTitleOptions, setClassTitleOptions] = useState<any[]>([]);
+
+  const [buttonLoading, setButtonLoading] = useState<boolean>(false);
 
   // 选择表格文件
   async function selectFile() {
+    setButtonLoading(true);
     const result = await selectOneExcelFile();
     if (!result) return;
 
     const fileData = await readExcelFile(result);
+    setButtonLoading(false);
 
     if (!fileData) {
       errorMessage("读取失败");
@@ -103,22 +109,22 @@ function App() {
     successMessage("读取成功");
 
     if (tabKey === "成绩数据表") {
+      // data
       setScoreColumns(data.columns);
       setScoreTableData(data.tableData);
 
-      // setScoreTitleInit(data.titleInit);
+      // store
       setScoreTitleIndex(data.titleInit);
-
       setScoreTitleOptions(data.titleOptions);
 
       setOpenDrawer(true);
     } else if (tabKey === "班级信息表") {
+      // data
       setClassColumns(data.columns);
       setClassTableData(data.tableData);
 
-      // setClassTitleInit(data.titleInit);
+      // store
       setClassTitleIndex(data.titleInit);
-
       setClassTitleOptions(data.titleOptions);
 
       setOpenDrawer(true);
@@ -145,7 +151,27 @@ function App() {
       children: <ParamsSetting />,
       disabled: tabKey != "参数配置" && openDrawer,
     },
+    {
+      key: "计算结果",
+      label: `计算结果`,
+      children: <Empty />,
+      disabled: tabKey != "计算结果" && openDrawer,
+    },
   ];
+
+  async function openScoreFileDir() {
+    const documentDirPath = await getDocumentDir();
+    const appFileDir = await joinPath(documentDirPath, "教务软件数据");
+    if (await isNotExist(appFileDir)) {
+      await createDirectory(appFileDir);
+    }
+    const scoreFileDir = await joinPath(appFileDir, "成绩统计");
+    if (await isNotExist(scoreFileDir)) {
+      await createDirectory(scoreFileDir);
+    }
+
+    openPath(scoreFileDir);
+  }
 
   // 计算结果
   async function computeResult() {
@@ -258,9 +284,9 @@ function App() {
         }
         table[className][subject + "平均分"] = _.round(meanScore, 2);
         table[className][subject + "优秀人数"] = goodNum;
-        table[className][subject + "优秀率"] = _.round(goodRatio, 2);
+        table[className][subject + "优秀率"] = goodRatio;
         table[className][subject + "及格人数"] = okNum;
-        table[className][subject + "及格率"] = _.round(okRatio, 2);
+        table[className][subject + "及格率"] = okRatio;
         table[className][subject + "综合"] = _.round(total, 2);
       });
     });
@@ -302,7 +328,7 @@ function App() {
 
     console.log("排名", table);
 
-    // 导出准备
+    // 导出路径
     const documentDirPath = await getDocumentDir();
     const appFileDir = await joinPath(documentDirPath, "教务软件数据");
     if (await isNotExist(appFileDir)) {
@@ -337,7 +363,21 @@ function App() {
         return;
       }
 
-      const values = _.values(table);
+      const data = _.values(table);
+
+      // 转换为百分制
+      const values = _.map(data, (dict) => {
+        _.forOwn(dict, (value, key) => {
+          if (
+            _.isNumber(value) &&
+            (key.endsWith("优秀率") || key.endsWith("及格率"))
+          ) {
+            dict[key] = _.round(value * 100, 2) + "%";
+          }
+        });
+        return dict;
+      });
+
       const filteredDictList = values.map((dict) =>
         _.pickBy(
           dict,
@@ -369,36 +409,27 @@ function App() {
             {tabKey === "成绩数据表" && (
               <div>
                 <Button
+                  loading={buttonLoading}
                   onClick={selectFile}
                   icon={<UploadOutlined />}
-                  disabled={openDrawer}
                 >
                   选择成绩表
                 </Button>
 
-                {scoreTableData.length != 0 && (
-                  <TitleDrawer
-                    titleOptions={scoreTitleOptions}
-                    titleInit={scoreTitleIndex}
-                  />
-                )}
+                {scoreTableData.length != 0 && <TitleDrawer />}
               </div>
             )}
             {tabKey === "班级信息表" && (
               <div>
                 <Button
+                  loading={buttonLoading}
                   onClick={selectFile}
                   disabled={currentStep < 1 || openDrawer}
                   icon={<UploadOutlined />}
                 >
                   选择班级表
                 </Button>
-                {classTableData.length != 0 && (
-                  <TitleDrawer
-                    titleOptions={classTitleOptions}
-                    titleInit={classTitleIndex}
-                  />
-                )}
+                {classTableData.length != 0 && <TitleDrawer />}
               </div>
             )}
             {tabKey === "参数配置" && (
@@ -408,7 +439,18 @@ function App() {
                   icon={<SettingOutlined />}
                   onClick={() => emit("save-score-setting")}
                 >
-                  确认配置
+                  确认配置项
+                </Button>
+              </div>
+            )}
+            {tabKey === "计算结果" && (
+              <div>
+                <Button
+                  disabled={openDrawer}
+                  icon={<FolderOpenOutlined />}
+                  onClick={openScoreFileDir}
+                >
+                  打开文件夹
                 </Button>
               </div>
             )}
@@ -418,7 +460,8 @@ function App() {
               <Button
                 onClick={computeResult}
                 type="primary"
-                icon={<DotChartOutlined />}
+                danger
+                icon={<AreaChartOutlined />}
               >
                 统计结果
               </Button>
