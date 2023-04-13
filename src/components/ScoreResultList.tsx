@@ -5,6 +5,7 @@ import { FileEntry } from "@tauri-apps/api/fs";
 interface DataType {
   name?: string;
   path?: string;
+  index: number;
 }
 
 const App: React.FC = () => {
@@ -42,6 +43,9 @@ const App: React.FC = () => {
     }
 
     temp = orderBy(temp, ["name"], ["desc"]);
+    temp.map((item, index) => {
+      item.index = index;
+    });
     setCache(temp);
     setInitLoading(false);
   }
@@ -74,7 +78,7 @@ const App: React.FC = () => {
             title={
               <div>
                 {item.name}
-                {!index && (
+                {item.index === 0 && (
                   <Tag bordered={false} color="red">
                     New
                   </Tag>

@@ -8,12 +8,17 @@ import Score from "./pages/Score";
 import ErrorPage from "./components/ErrorPage";
 
 import zhCN from "antd/locale/zh_CN";
-import { ConfigProvider, Empty } from "antd";
+import { ConfigProvider, Empty, theme } from "antd";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <ConfigProvider locale={zhCN}>
+    <ConfigProvider
+      theme={{
+        algorithm: theme.defaultAlgorithm,
+      }}
+      locale={zhCN}
+    >
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<App />}>

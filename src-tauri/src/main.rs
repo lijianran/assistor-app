@@ -12,6 +12,9 @@ fn greet(name: &str) -> String {
 fn main() {
     tauri::Builder::default()
         .setup(|_app| {
+            #[cfg(target_os = "macos")]
+            _app.set_activation_policy(tauri::ActivationPolicy::Accessory);
+
             let _window = _app.get_window("main").unwrap();
             _app.listen_global("open_devtools", move |_event| {
                 #[cfg(debug_assertions)] // only include this code on debug builds

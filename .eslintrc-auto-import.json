@@ -41,6 +41,7 @@
     "selectOneRuleFile": true,
     "startTransition": true,
     "successMessage": true,
+    "sysNotifyToast": true,
     "timeDirName": true,
     "useCallback": true,
     "useContext": true,
