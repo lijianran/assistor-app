@@ -7,8 +7,8 @@
     "withGlobalTauri": true
   },
   "package": {
-    "productName": "assistor-app",
-    "version": "0.0.0"
+    "productName": "AssistorApp",
+    "version": "../package.json"
   },
   "tauri": {
     "allowlist": {
@@ -28,14 +28,19 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "com.assistor.app",
       "targets": "all"
     },
     "security": {
       "csp": null
     },
     "updater": {
-      "active": false
+      "active": true,
+      "endpoints": [
+        "https://github.com/lijianran/hanzi_tools/releases/download/{{current_version}}/latest.json"
+      ],
+      "dialog": true,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDRDREM4MTkwRjQ1NUNDRDAKUldUUXpGWDBrSUhjVE5xYUtFcDFIZ2FVL3VRdmZFY29BMURwbGZLZmtjdS9zRjc2b0c0NXRwR1EK"
     },
     "windows": [
       {
