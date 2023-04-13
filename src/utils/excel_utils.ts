@@ -1,5 +1,9 @@
 import * as XLSX from "xlsx";
-import { readBinaryFile, BaseDirectory } from "@tauri-apps/api/fs";
+import {
+  readBinaryFile,
+  writeBinaryFile,
+  BaseDirectory,
+} from "@tauri-apps/api/fs";
 
 export async function readExcelFile(filePath: string) {
   const contents = await readBinaryFile(filePath);
@@ -17,4 +21,18 @@ export async function readExcelFile(filePath: string) {
   }
 
   return resData;
+}
+
+export async function writeExcelFile(
+  filePath: string,
+  data: any[],
+  header: string[]
+) {
+  const sheet = XLSX.utils.json_to_sheet(data, { header });
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, sheet, "Sheet1");
+
+  const buffer = XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });
+
+  await writeBinaryFile(filePath, buffer);
 }

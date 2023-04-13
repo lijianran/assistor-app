@@ -11,10 +11,11 @@ import {
   Select,
   Space,
 } from "antd";
+import type { FormInstance } from "antd/es/form";
 
 const { Option } = Select;
 
-function App({ titleOptions, formRef, titleInit }: any) {
+function App({ titleOptions, titleInit }: any) {
   // store
   const tabKey = useScoreStore((state) => state.tabKey);
   const currentStep = useScoreStore((state) => state.currentStep);
@@ -25,7 +26,11 @@ function App({ titleOptions, formRef, titleInit }: any) {
     setCurrentStep,
     setTabKey,
     setOpenDrawer,
+    setScoreTitleIndex,
+    setClassTitleIndex,
   } = useScoreStore.getState();
+
+  const formRef = React.useRef<FormInstance>(null);
 
   const showDrawer = () => {
     // setOpen(true);
@@ -37,23 +42,27 @@ function App({ titleOptions, formRef, titleInit }: any) {
   };
 
   const submitData = () => {
-    formRef.current.submit();
+    formRef.current?.submit();
   };
 
   const onFinish = (values: any) => {
     // console.log("Success:", values);
-    // console.log(formRef.current.getFieldsValue());
+    // console.log(formRef.current?.getFieldsValue());
 
     // setOpen(false);
     setOpenDrawer(false);
     // nextStep();
     if (tabKey === "成绩数据表") {
+      setScoreTitleIndex(values);
+
       if (currentStep < 1) {
         setCurrentStep(1);
         setTabKey("班级信息表");
       }
     }
     if (tabKey === "班级信息表") {
+      setClassTitleIndex(values);
+
       if (currentStep < 2) {
         setCurrentStep(2);
         setTabKey("参数配置");
@@ -66,7 +75,7 @@ function App({ titleOptions, formRef, titleInit }: any) {
   };
 
   function handleValidator(rule: any, value: any) {
-    const values: any = formRef.current.getFieldsValue();
+    const values: any = formRef.current?.getFieldsValue();
 
     if (tabKey === "成绩数据表") {
       if (scoreTitleRequired[rule.field] && value === -1) {
@@ -80,7 +89,7 @@ function App({ titleOptions, formRef, titleInit }: any) {
     }
 
     for (const key in values) {
-      if (value === -1 || rule.field === key) {
+      if (value === "无" || rule.field === key) {
         continue;
       }
       if (Object.prototype.hasOwnProperty.call(values, key)) {

@@ -7,7 +7,6 @@ import {
 import { Button, Typography, Col, Row, Space, Table, Empty } from "antd";
 
 import type { TabsProps } from "antd";
-import type { FormInstance } from "antd/es/form";
 
 import _ from "lodash";
 import { emit } from "@tauri-apps/api/event";
@@ -24,18 +23,21 @@ function getTableData(fileData: any[]) {
   const firstLine = fileData[0];
 
   let titleOptions = [];
-  let titleInit: { [key: string]: number } = {};
+  let titleInit: { [key: string]: string } = {};
   let columns = [];
   const keys = Object.keys(firstLine);
+  // console.log(firstLine);
+  // console.log(keys);
+
   for (let index = 0; index < keys.length; index++) {
     const key = keys[index];
 
     titleOptions.push({
       label: "第" + (index + 1) + "列【" + key + "】",
-      value: index,
+      value: key,
     });
 
-    titleInit[key] = index;
+    titleInit[key] = key;
 
     columns.push({
       title: key,
@@ -66,8 +68,12 @@ function App() {
   const openDrawer = useScoreStore((state) => state.openDrawer);
   const scoreTitleIndex = useScoreStore((state) => state.scoreTitleIndex);
   const classTitleIndex = useScoreStore((state) => state.classTitleIndex);
-  const { setOpenDrawer, setScoreTitleIndex, setClassTitleIndex } =
-    useScoreStore.getState();
+  const {
+    setCurrentStep,
+    setOpenDrawer,
+    setScoreTitleIndex,
+    setClassTitleIndex,
+  } = useScoreStore.getState();
 
   const subjectScore = useScoreSettingStore((state) => state.subjectScore);
   const kindGood = useScoreSettingStore((state) => state.kindGood);
@@ -77,12 +83,10 @@ function App() {
   const [scoreColumns, setScoreColumns] = useState<any[]>([]);
   const [scoreTableData, setScoreTableData] = useState<any[]>([]);
   const [scoreTitleOptions, setScoreTitleOptions] = useState<any[]>([]);
-  const scoreFormRef = React.useRef<FormInstance>(null);
 
   const [classColumns, setClassColumns] = useState<any[]>([]);
   const [classTableData, setClassTableData] = useState<any[]>([]);
   const [classTitleOptions, setClassTitleOptions] = useState<any[]>([]);
-  const classFormRef = React.useRef<FormInstance>(null);
 
   // 选择表格文件
   async function selectFile() {
@@ -163,19 +167,24 @@ function App() {
 
     console.log(scoreTitleIndex);
     console.log(scoreTableData.slice(0, 10));
+    console.log(classTitleIndex);
+    console.log(classTableData.slice(0, 10));
+
+    const classInfoDict = _.keyBy(classTableData, classTitleIndex["班级"]);
+    console.log("班级信息", classInfoDict);
 
     // 按班级分组
     const groups = _.groupBy(scoreTableData, (item) => {
-      return item.班级;
+      return item[scoreTitleIndex["班级"]];
     });
-    console.log(groups);
+    console.log("分班级", groups);
 
     // 优秀和及格分数线
     let totalScore = 0;
     let goodScoreDict: { [key: string]: number } = {};
     let okScoreDict: { [key: string]: number } = {};
     _.forEach(subjectScore, (score, subject) => {
-      if (scoreTitleIndex[subject] === -1) {
+      if (scoreTitleIndex[subject] === "无") {
         return;
       }
       totalScore += score;
@@ -185,39 +194,68 @@ function App() {
     goodScoreDict["总分"] = _.floor((totalScore * kindGood) / 100 + 0.5);
     okScoreDict["总分"] = _.floor((totalScore * kindOk) / 100 + 0.5);
 
-    console.log(subjectScore, kindGood, kindOk);
-    console.log("优秀", goodScoreDict);
-    console.log("及格", okScoreDict);
+    console.log("参数配置", subjectScore, kindGood, kindOk);
+    console.log("优秀分数线", goodScoreDict);
+    console.log("及格分数线", okScoreDict);
 
     // 分班级统计
     _.forEach(groups, (scores, className) => {
       // 按总分排序
-      groups[className] = _.orderBy(scores, ["总分"], ["desc"]);
+      groups[className] = _.orderBy(
+        scores,
+        [scoreTitleIndex["总分"]],
+        ["desc"]
+      );
+      // 班级有效人数
+      if (!(className in classInfoDict)) {
+        errorMessage("班级信息表中缺少班级: " + className);
+        return;
+      }
+      const countNum = classInfoDict[className][classTitleIndex["人数"]];
 
       // 统计
       table[className] = { 班级: className };
       _.forEach(targetSubjuects, (subject) => {
-        if (scoreTitleIndex[subject] === -1) {
-          // 不统计
+        // 表中索引
+        const index = scoreTitleIndex[subject];
+        // 不统计
+        if (index === "无") {
           return;
         }
+
+        // 教师
+        let teacherName;
+        if (classTitleIndex[subject] in classInfoDict[className]) {
+          teacherName = classInfoDict[className][classTitleIndex[subject]];
+        } else {
+          teacherName = "";
+        }
+
         // 平均分
         const meanScore = _.mean(
-          _.map(groups[className].slice(0, 55), subject)
+          _.map(groups[className].slice(0, countNum), index)
         );
+
         // 统计优秀数据
         const goodNum = _.filter(groups[className], function (o) {
-          return o[subject] >= goodScoreDict[subject];
+          // 达到优秀线
+          return o[index] >= goodScoreDict[subject];
         }).length;
-        const goodRatio = goodNum / 55;
+        const goodRatio = goodNum / countNum;
+
         // 统计及格数据
         const okNum = _.filter(groups[className], function (o) {
-          return o[subject] >= okScoreDict[subject];
+          // 达到及格线
+          return o[index] >= okScoreDict[subject];
         }).length;
-        const okRatio = okNum / 55;
+        const okRatio = okNum / countNum;
+
         // 综合数据
         const total = meanScore + okRatio * 100 + goodRatio * 100;
 
+        if (subject !== "总分") {
+          table[className][subject + "教师"] = teacherName;
+        }
         table[className][subject + "平均分"] = _.round(meanScore, 2);
         table[className][subject + "优秀人数"] = goodNum;
         table[className][subject + "优秀率"] = _.round(goodRatio, 2);
@@ -229,13 +267,16 @@ function App() {
 
     console.log("统计", table);
 
-    // 统计排名
+    // 统计各项排名
     const sortTarget = ["平均分", "优秀率", "及格率", "综合"];
     _.forEach(targetSubjuects, (subject) => {
-      if (scoreTitleIndex[subject] === -1) {
+      // 表中索引
+      const index = scoreTitleIndex[subject];
+      if (index === "无") {
         return;
       }
 
+      // 统计排名
       _.forEach(sortTarget, (target) => {
         let rank = 0;
         let prev = -1;
@@ -260,6 +301,60 @@ function App() {
     });
 
     console.log("排名", table);
+
+    // 导出准备
+    const documentDirPath = await getDocumentDir();
+    const appFileDir = await joinPath(documentDirPath, "教务软件数据");
+    if (await isNotExist(appFileDir)) {
+      await createDirectory(appFileDir);
+    }
+    const scoreFileDir = await joinPath(appFileDir, "成绩统计");
+    if (await isNotExist(scoreFileDir)) {
+      await createDirectory(scoreFileDir);
+    }
+    const saveDirPath = await joinPath(scoreFileDir, timeDirName());
+    if (await isNotExist(saveDirPath)) {
+      await createDirectory(saveDirPath);
+    }
+
+    // 导出结果
+    const suffix = [
+      "教师",
+      "平均分",
+      "平均分排名",
+      "优秀人数",
+      "优秀率",
+      "优秀率排名",
+      "及格人数",
+      "及格率",
+      "及格率排名",
+      "综合",
+      "综合排名",
+    ];
+    _.forEach(targetSubjuects, async (subject) => {
+      // 不导出
+      if (scoreTitleIndex[subject] === "无") {
+        return;
+      }
+
+      const values = _.values(table);
+      const filteredDictList = values.map((dict) =>
+        _.pickBy(
+          dict,
+          (value, key) =>
+            key.includes(subject) || key === scoreTitleIndex["班级"]
+        )
+      );
+      const path = await joinPath(saveDirPath, subject + ".xlsx");
+      const header = _.map(suffix, function (value) {
+        return subject + value;
+      });
+      await writeExcelFile(path, filteredDictList, ["班级", ...header]);
+    });
+    // 打开路径
+    openPath(saveDirPath);
+    // 完成
+    setCurrentStep(4);
   }
 
   return (
@@ -285,7 +380,6 @@ function App() {
                   <TitleDrawer
                     titleOptions={scoreTitleOptions}
                     titleInit={scoreTitleIndex}
-                    formRef={scoreFormRef}
                   />
                 )}
               </div>
@@ -303,7 +397,6 @@ function App() {
                   <TitleDrawer
                     titleOptions={classTitleOptions}
                     titleInit={classTitleIndex}
-                    formRef={classFormRef}
                   />
                 )}
               </div>
@@ -321,7 +414,7 @@ function App() {
             )}
           </Col>
           <Col>
-            {currentStep === 3 && (
+            {currentStep > 2 && (
               <Button
                 onClick={computeResult}
                 type="primary"

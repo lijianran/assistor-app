@@ -1,6 +1,6 @@
-declare type TitleIndexDict = { [key: string]: number };
+declare type TitleIndexDict = { [key: string]: string };
 
-declare type Step = 0 | 1 | 2 | 3;
+declare type Step = 0 | 1 | 2 | 3 | 4;
 declare type TabKey = "成绩数据表" | "班级信息表" | "参数配置";
 
 /** 成绩表字段是否必选 */
@@ -41,38 +41,38 @@ declare interface ClassTitleRequired {
 
 /** 成绩表字段索引 */
 declare interface ScoreTitleIndex {
-  [key: string]: number;
+  [key: string]: string;
 
-  姓名: number;
-  考号: number;
-  班级: number;
-  总分: number;
-  语文: number;
-  数学: number;
-  英语: number;
-  物理: number;
-  化学: number;
-  道法: number;
-  历史: number;
-  地理: number;
-  生物: number;
+  姓名: string;
+  考号: string;
+  班级: string;
+  总分: string;
+  语文: string;
+  数学: string;
+  英语: string;
+  物理: string;
+  化学: string;
+  道法: string;
+  历史: string;
+  地理: string;
+  生物: string;
 }
 
 /** 班级表字段索引 */
 declare interface ClassTitleIndex {
-  [key: string]: number;
+  [key: string]: string;
 
-  班级: number;
-  语文: number;
-  数学: number;
-  英语: number;
-  物理: number;
-  化学: number;
-  道法: number;
-  历史: number;
-  地理: number;
-  生物: number;
-  人数: number;
+  班级: string;
+  语文: string;
+  数学: string;
+  英语: string;
+  物理: string;
+  化学: string;
+  道法: string;
+  历史: string;
+  地理: string;
+  生物: string;
+  人数: string;
 }
 
 /** 成绩统计 store */
