@@ -102,7 +102,7 @@ export const useScoreStore = create<ScoreProps>((set, get) => ({
   setScoreTitleIndex: (val) => {
     let titleIndex = initScoreTitle();
     for (const key in val) {
-      if (Object.prototype.hasOwnProperty.call(val, key)) {
+      if (key in titleIndex) {
         titleIndex[key] = val[key];
       }
     }

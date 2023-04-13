@@ -6,15 +6,16 @@ import {
 } from "@ant-design/icons";
 import { Button, Typography, Col, Row, Space, Table, Empty } from "antd";
 
+import type { TabsProps } from "antd";
+import type { FormInstance } from "antd/es/form";
+
+import _ from "lodash";
+import { emit } from "@tauri-apps/api/event";
+
 import Steps from "../components/Steps";
 import TableTabs from "../components/TableTabs";
 import TitleDrawer from "../components/TitleDrawer";
 import ParamsSetting from "../components/ParamsSetting";
-
-import { emit } from "@tauri-apps/api/event";
-
-import type { TabsProps } from "antd";
-import type { FormInstance } from "antd/es/form";
 
 const { Title } = Typography;
 
@@ -59,22 +60,6 @@ function getTableData(fileData: any[]) {
 }
 
 function App() {
-  // const title_dict = {
-  //   姓名: "name",
-  //   考号: "id",
-  //   班级: "class",
-  //   总分: "total",
-  //   语文: "chinese",
-  //   数学: "math",
-  //   英语: "english",
-  //   物理: "wuli",
-  //   化学: "huaxue",
-  //   道法: "daofa",
-  //   历史: "lishi",
-  //   地理: "dili",
-  //   生物: "shengwu",
-  // };
-
   // store
   const currentStep = useScoreStore((state) => state.currentStep);
   const tabKey = useScoreStore((state) => state.tabKey);
@@ -83,6 +68,10 @@ function App() {
   const classTitleIndex = useScoreStore((state) => state.classTitleIndex);
   const { setOpenDrawer, setScoreTitleIndex, setClassTitleIndex } =
     useScoreStore.getState();
+
+  const subjectScore = useScoreSettingStore((state) => state.subjectScore);
+  const kindGood = useScoreSettingStore((state) => state.kindGood);
+  const kindOk = useScoreSettingStore((state) => state.kindOk);
 
   // 表格数据
   const [scoreColumns, setScoreColumns] = useState<any[]>([]);
@@ -155,7 +144,123 @@ function App() {
   ];
 
   // 计算结果
-  function computeResult() {}
+  async function computeResult() {
+    // 结果
+    const table: any = {};
+
+    const targetSubjuects = [
+      "总分",
+      "语文",
+      "数学",
+      "英语",
+      "物理",
+      "化学",
+      "道法",
+      "历史",
+      "地理",
+      "生物",
+    ];
+
+    console.log(scoreTitleIndex);
+    console.log(scoreTableData.slice(0, 10));
+
+    // 按班级分组
+    const groups = _.groupBy(scoreTableData, (item) => {
+      return item.班级;
+    });
+    console.log(groups);
+
+    // 优秀和及格分数线
+    let totalScore = 0;
+    let goodScoreDict: { [key: string]: number } = {};
+    let okScoreDict: { [key: string]: number } = {};
+    _.forEach(subjectScore, (score, subject) => {
+      if (scoreTitleIndex[subject] === -1) {
+        return;
+      }
+      totalScore += score;
+      goodScoreDict[subject] = _.floor((score * kindGood) / 100 + 0.5);
+      okScoreDict[subject] = _.floor((score * kindOk) / 100 + 0.5);
+    });
+    goodScoreDict["总分"] = _.floor((totalScore * kindGood) / 100 + 0.5);
+    okScoreDict["总分"] = _.floor((totalScore * kindOk) / 100 + 0.5);
+
+    console.log(subjectScore, kindGood, kindOk);
+    console.log("优秀", goodScoreDict);
+    console.log("及格", okScoreDict);
+
+    // 分班级统计
+    _.forEach(groups, (scores, className) => {
+      // 按总分排序
+      groups[className] = _.orderBy(scores, ["总分"], ["desc"]);
+
+      // 统计
+      table[className] = { 班级: className };
+      _.forEach(targetSubjuects, (subject) => {
+        if (scoreTitleIndex[subject] === -1) {
+          // 不统计
+          return;
+        }
+        // 平均分
+        const meanScore = _.mean(
+          _.map(groups[className].slice(0, 55), subject)
+        );
+        // 统计优秀数据
+        const goodNum = _.filter(groups[className], function (o) {
+          return o[subject] >= goodScoreDict[subject];
+        }).length;
+        const goodRatio = goodNum / 55;
+        // 统计及格数据
+        const okNum = _.filter(groups[className], function (o) {
+          return o[subject] >= okScoreDict[subject];
+        }).length;
+        const okRatio = okNum / 55;
+        // 综合数据
+        const total = meanScore + okRatio * 100 + goodRatio * 100;
+
+        table[className][subject + "平均分"] = _.round(meanScore, 2);
+        table[className][subject + "优秀人数"] = goodNum;
+        table[className][subject + "优秀率"] = _.round(goodRatio, 2);
+        table[className][subject + "及格人数"] = okNum;
+        table[className][subject + "及格率"] = _.round(okRatio, 2);
+        table[className][subject + "综合"] = _.round(total, 2);
+      });
+    });
+
+    console.log("统计", table);
+
+    // 统计排名
+    const sortTarget = ["平均分", "优秀率", "及格率", "综合"];
+    _.forEach(targetSubjuects, (subject) => {
+      if (scoreTitleIndex[subject] === -1) {
+        return;
+      }
+
+      _.forEach(sortTarget, (target) => {
+        let rank = 0;
+        let prev = -1;
+        let offset = 0;
+
+        // 平均分排名
+        _.forEach(
+          _.orderBy(table, [subject + target], ["desc"]),
+          (item, index) => {
+            if (item[subject + target] !== prev) {
+              rank += offset + 1;
+              offset = 0;
+              prev = item[subject + target];
+            } else {
+              offset += 1;
+            }
+
+            table[item["班级"]][subject + target + "排名"] = rank;
+          }
+        );
+      });
+    });
+
+    console.log("排名", table);
+  }
 
   return (
     <>
