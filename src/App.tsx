@@ -102,17 +102,17 @@ export default () => {
       waterMarkProps={{
         content: "Assistor",
       }}
-      avatarProps={{
-        icon: <UserOutlined />,
-        size: "small",
-        title: "User",
-      }}
+      // avatarProps={{
+      //   icon: <UserOutlined />,
+      //   size: "small",
+      //   title: "User",
+      // }}
       actionsRender={() => [
-        <ReloadOutlined key="ReloadOutlined" onClick={flush} />,
-        <InfoCircleOutlined key="InfoCircleOutlined" />,
-        // <SettingOutlined />,
+        <ReloadOutlined name="test" key="ReloadOutlined" onClick={flush} />,
+        // <InfoCircleOutlined key="InfoCircleOutlined" />,
         <QuestionCircleOutlined key="QuestionCircleOutlined" />,
         // <MergeCellsOutlined key="MergeCellsOutlined" />,
+        <SettingOutlined />,
       ]}
       // menuFooterRender={(props: any) => {
       //   if (props?.collapsed) return undefined;

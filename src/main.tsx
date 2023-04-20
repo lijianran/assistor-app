@@ -4,7 +4,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import Home from "./pages/Home";
 import Score from "./pages/Score";
-import ErrorPage from "./components/ErrorPage";
+import ErrorPage from "./pages/ErrorPage";
 
 import zhCN from "antd/locale/zh_CN";
 import { ConfigProvider, Empty, theme } from "antd";

@@ -1,5 +1,5 @@
-import Calendar from "../components/Calendar";
-import CurrentTime from "../components/CurrentTime";
+import Calendar from "../components/Home/Calendar";
+import CurrentTime from "../components/Home/CurrentTime";
 import { Typography, Timeline, Space } from "antd";
 
 const { Title } = Typography;

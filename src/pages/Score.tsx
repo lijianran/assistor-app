@@ -17,11 +17,11 @@ import type { TabsProps, TourProps } from "antd";
 import _ from "lodash";
 import { emit } from "@tauri-apps/api/event";
 
-import Steps from "../components/Steps";
-import TableTabs from "../components/TableTabs";
-import TitleDrawer from "../components/TitleDrawer";
-import ParamsSetting from "../components/ParamsSetting";
-import ScoreResultList from "../components/ScoreResultList";
+import Steps from "../components/Score/Steps";
+import TableTabs from "../components/Score/TableTabs";
+import TitleDrawer from "../components/Score/TitleDrawer";
+import ParamsSetting from "../components/Score/ParamsSetting";
+import ScoreResultList from "../components/Score/ScoreResultList";
 
 const { Title } = Typography;
 
