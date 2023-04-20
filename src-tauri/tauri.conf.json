@@ -64,6 +64,7 @@
     "updater": {
       "active": true,
       "endpoints": [
+        "https://github.com/lijianran/assistor-app/releases/latest/download/latest.json",
         "https://gitee.com/lijianran/updater/releases/download/assistor-app-updater/latest.json"
       ],
       "dialog": false,
