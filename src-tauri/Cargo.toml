@@ -1,6 +1,6 @@
 [package]
 name = "assistor-app"
-version = "0.0.1"
+version = "0.1.0"
 description = "Assistor App"
 authors = ["lijianran"]
 license = ""
