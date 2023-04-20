@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Space, Row, Button, Typography, Modal, message } from "antd";
-import { type, arch, platform, version } from "@tauri-apps/api/os";
 
 import {
   checkUpdate as tauriCheckUpdate,
@@ -38,17 +37,14 @@ const App: React.FC = () => {
 
   const startUpdate = async () => {
     setIsDownload(true);
-
-    installUpdate();
-
-    const unListen = await onUpdaterEvent(({ status }) => {
+    const unListen = await onUpdaterEvent(({ error, status }) => {
       switch (status) {
         case "DONE":
           messageApi.success("更新成功，即将重启");
           setIsDownload(false);
           setOpenUpdate(false);
 
-          relaunch();
+          setTimeout(() => relaunch(), 1000 * 3);
           break;
 
         case "ERROR":
@@ -58,8 +54,10 @@ const App: React.FC = () => {
           break;
       }
     });
-
     setUnListen(unListen);
+
+    // windows 更新并重启
+    await installUpdate();
   };
 
   const handleOk = () => {
@@ -81,27 +79,28 @@ const App: React.FC = () => {
 
     await tauriCheckUpdate()
       .then((res) => {
-        if (!res.manifest) {
-          if (!hideMessage) {
-            messageApi.error("获取新版本失败，请稍后重试");
-          }
-          return;
-        }
-
         if (res.shouldUpdate) {
+          if (!res.manifest) {
+            if (!hideMessage) {
+              messageApi.warning("没有发现符合当前系统的新版本");
+            }
+            return;
+          }
           setUpdateManifest(res.manifest);
           // console.log("updateManifest", res.manifest);
 
           setOpenUpdate(true);
         } else {
           if (!hideMessage) {
-            messageApi.success("当前已经是最新版本");
+            messageApi.success("当前已经是最新版本 🥳");
           }
         }
       })
       .catch((err) => {
         console.log(err);
-        messageApi.error("获取新版本失败，请稍后重试");
+        if (!hideMessage) {
+          messageApi.warning("获取新版本失败，请稍后重试");
+        }
       });
 
     setIsCheckingUpdate(false);
@@ -110,7 +109,7 @@ const App: React.FC = () => {
   useEffect(() => {
     getAppInfo();
 
-    checkUpdate(false);
+    checkUpdate();
 
     listen("update-app", () => checkUpdate(false));
   }, []);

@@ -57,6 +57,8 @@ const getSignature = async (url) => {
 };
 
 async function generateLatestJson() {
+  console.log("Gitee Updater:","https://gitee.com/lijianran/updater");
+
   const release = await getReleaseByTag();
 
   for (const { name, browser_download_url } of release.assets) {

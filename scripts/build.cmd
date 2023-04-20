@@ -1,8 +1,8 @@
 @echo off
 
 echo Start set ENV
-set /P TAURI_PRIVATE_KEY=<%HOMEPATH%\.tauri\hanzi_tools.key
-set TAURI_KEY_PASSWORD=
+set /P TAURI_PRIVATE_KEY=<%HOMEPATH%\.tauri\assistor-app.key
+set TAURI_KEY_PASSWORD=lijianran
 
 if "%TAURI_PRIVATE_KEY%" == "" (
     echo ERROR: tauri private key not exist
@@ -16,4 +16,4 @@ echo ----------------------------------------
 echo Start to build the app
 call pnpm tauri build
 
-pause
+@REM pause

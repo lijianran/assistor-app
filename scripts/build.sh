@@ -10,7 +10,7 @@ else
 fi
 
 export TAURI_PRIVATE_KEY
-export TAURI_KEY_PASSWORD=''
+export TAURI_KEY_PASSWORD='lijianran'
 
 echo --------------------
 echo Start to build the app

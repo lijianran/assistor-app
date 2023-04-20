@@ -24,7 +24,7 @@ function App() {
       <Space align="start" size="large">
         <Space direction="vertical" size="large">
           <CurrentTime />
-          <Timeline items={logItems.slice(0, 5)} />
+          <Timeline items={logItems.slice(0, 10)} />
         </Space>
 
         <Calendar />
