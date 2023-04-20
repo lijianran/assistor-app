@@ -23,7 +23,7 @@ const App: React.FC = () => {
   // const isCheckUpdate = useSettingsStore((state) => state.isCheckingUpdate);
   const { setIsCheckingUpdate } = useSettingsStore.getState();
 
-  const [unListen, setUnListen] = useState<any>();
+  const [updaterListen, setUpdaterListen] = useState<any>();
   const [openUpdate, setOpenUpdate] = useState(false);
   const [isDownload, setIsDownload] = useState(false);
   const [appVersion, setAppVersion] = useState<string>("");
@@ -36,28 +36,25 @@ const App: React.FC = () => {
   const [messageApi, contextHolder] = message.useMessage();
 
   const startUpdate = async () => {
+    // 开始更新
     setIsDownload(true);
+
     const unListen = await onUpdaterEvent(({ error, status }) => {
-      switch (status) {
-        case "DONE":
-          messageApi.success("更新成功，即将重启");
-          setIsDownload(false);
-          setOpenUpdate(false);
-
-          setTimeout(() => relaunch(), 1000 * 3);
-          break;
-
-        case "ERROR":
-          messageApi.error("网络似乎出了问题，请检查你的网络设置");
-          setIsDownload(false);
-          unListen();
-          break;
+      if (error) {
+        messageApi.error(status + ": " + error);
+        setIsDownload(false);
+        // 取消监听
+        updaterListen();
       }
     });
-    setUnListen(unListen);
+    setUpdaterListen(unListen);
 
     // windows 更新并重启
     await installUpdate();
+
+    // linux mac 重启
+    messageApi.success("更新成功，即将重启");
+    setTimeout(() => relaunch(), 1000 * 3);
   };
 
   const handleOk = () => {

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TAURI_PRIVATE_KEY=$(cat ~/.tauri/assistor_app.key)
+TAURI_PRIVATE_KEY=$(cat ~/.tauri/assistor-app.key)
 if [ ! $TAURI_PRIVATE_KEY ]; then
     echo "ERROR: tauri key not exists"
     exit

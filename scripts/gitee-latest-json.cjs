@@ -15,15 +15,15 @@ var latestJson = {
   notes: "https://github.com/lijianran/assistor-app/releases/latest",
   pub_date: new Date().toISOString(),
   platforms: {
+    "linux-x86_64": {
+      signature: "",
+      url: "",
+    },
     "darwin-x86_64": {
       signature: "",
       url: "",
     },
     "darwin-aarch64": {
-      signature: "",
-      url: "",
-    },
-    "linux-x86_64": {
       signature: "",
       url: "",
     },
@@ -57,7 +57,7 @@ const getSignature = async (url) => {
 };
 
 async function generateLatestJson() {
-  console.log("Gitee Updater:","https://gitee.com/lijianran/updater");
+  console.log("Gitee Updater:", "https://gitee.com/lijianran/updater");
 
   const release = await getReleaseByTag();
 
@@ -80,9 +80,9 @@ async function generateLatestJson() {
       latestJson.platforms["darwin-x86_64"].signature = signature;
     }
     // macos aarch64
-    else if (name.endsWith("aarch64.app.tar.gz")) {
+    else if (name.endsWith(".app.tar.gz")) {
       latestJson.platforms["darwin-aarch64"].url = browser_download_url;
-    } else if (name.endsWith("aarch64.app.tar.gz.sig")) {
+    } else if (name.endsWith(".app.tar.gz.sig")) {
       const signature = await getSignature(browser_download_url);
       latestJson.platforms["darwin-aarch64"].signature = signature;
     }
