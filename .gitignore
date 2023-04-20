@@ -27,3 +27,4 @@ dist-ssr
 *.sw?
 
 auto-import.d.ts
+latest.json
