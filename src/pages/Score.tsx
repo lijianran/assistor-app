@@ -1,21 +1,18 @@
-import React from "react";
+// 成绩统计
+
 import {
   UploadOutlined,
-  DotChartOutlined,
   AreaChartOutlined,
-  TableOutlined,
   QuestionCircleOutlined,
-  BorderlessTableOutlined,
   SettingOutlined,
-  FolderOpenOutlined,
-  PoweroffOutlined,
 } from "@ant-design/icons";
-import { Tour, Button, Typography, Col, Row, Space, Table, Empty } from "antd";
+import { message, Button, Typography, Row, Space, Table } from "antd";
 
 import type { TabsProps, TourProps } from "antd";
 
 import _ from "lodash";
 import { emit } from "@tauri-apps/api/event";
+import { useLocation } from "react-router-dom";
 
 import Steps from "../components/Score/Steps";
 import TableTabs from "../components/Score/TableTabs";
@@ -74,12 +71,16 @@ function App() {
   const classTitleIndex = useScoreStore((state) => state.classTitleIndex);
   const {
     setCurrentStep,
+    setTabKey,
     setOpenDrawer,
     setScoreTitleIndex,
     setClassTitleIndex,
     setScoreTitleOptions,
     setClassTitleOptions,
   } = useScoreStore.getState();
+
+  // message
+  const [messageApi, contextHolder] = message.useMessage();
 
   const subjectScore = useScoreSettingStore((state) => state.subjectScore);
   const kindGood = useScoreSettingStore((state) => state.kindGood);
@@ -107,11 +108,11 @@ function App() {
     setButtonLoading(false);
 
     if (!fileData) {
-      errorMessage("读取失败");
+      messageApi.error("读取失败");
       return;
     }
     const data = getTableData(fileData);
-    successMessage("读取成功");
+    messageApi.success("读取成功");
 
     if (tabKey === "成绩数据表") {
       // data
@@ -225,7 +226,7 @@ function App() {
       );
       // 班级有效人数
       if (!(className in classInfoDict)) {
-        errorMessage("班级信息表中缺少班级: " + className);
+        messageApi.error("班级信息表中缺少班级: " + className);
         return;
       }
       const countNum = classInfoDict[className][classTitleIndex["人数"]];
@@ -388,15 +389,31 @@ function App() {
     setCurrentStep(4);
   }
 
+  async function openDocsFolder() {
+    const docsPath = await getResourcePath(
+      "resources",
+      "docs",
+      "成绩统计使用说明"
+    );
+
+    openPath(docsPath);
+  }
+
+  const location = useLocation();
+  useEffect(() => {
+    setCurrentStep(0);
+    setTabKey("成绩数据表");
+  }, [location]);
   return (
     <>
+      {contextHolder}
       <Title>
         成绩统计
         <Button
           type="text"
           shape="circle"
           icon={<QuestionCircleOutlined />}
-          onClick={() => {}}
+          onClick={openDocsFolder}
         />
       </Title>
 

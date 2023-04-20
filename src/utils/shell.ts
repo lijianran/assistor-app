@@ -7,7 +7,6 @@ export async function openPath(path: string) {
     .then()
     .catch((err) => {
       console.log(err);
-      errorMessage("打开失败");
     });
 }
 

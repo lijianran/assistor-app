@@ -26,7 +26,6 @@ async function openSelect(
   if (selected) {
     return selected;
   } else {
-    infoMessage("取消操作");
     return "";
   }
 }
