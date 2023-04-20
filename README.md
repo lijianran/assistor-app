@@ -4,8 +4,6 @@
 
 ![assistor-app](https://img.shields.io/badge/assistor--app-v0.1.0-brightgreen)
 
-教务系统
-
 ## 环境配置
 
 ```
