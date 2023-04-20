@@ -35,7 +35,7 @@ const App: React.FC = () => {
     appInfo.osVersion = await version();
     appInfo.arch = await arch();
 
-    console.log(appInfo);
+    // console.log(appInfo);
   }
 
   function updateApp() {
@@ -64,8 +64,17 @@ const App: React.FC = () => {
       >
         <Space direction="vertical">
           <Space>
-            <Text strong>当前版本:</Text>
-            <Text strong>v{appInfo.appVersion}</Text>
+            <Text strong>平台信息:</Text>
+            <Text strong>
+              {appInfo.platform} tauri{appInfo.tauriVersion}
+            </Text>
+          </Space>
+
+          <Space>
+            <Text strong>软件版本:</Text>
+            <Text strong>
+              {appInfo.appName} v{appInfo.appVersion}
+            </Text>
             <Button
               size="small"
               type="primary"
@@ -77,7 +86,14 @@ const App: React.FC = () => {
           </Space>
 
           <Space>
-            <Text strong>详情:</Text>
+            <Text strong>系统信息:</Text>
+            <Text strong>
+              {appInfo.os} {appInfo.arch} {appInfo.osVersion}
+            </Text>
+          </Space>
+
+          <Space>
+            <Text strong>项目详情:</Text>
             <Link
               href="https://github.com/lijianran/assistor-app"
               target="_blank"
