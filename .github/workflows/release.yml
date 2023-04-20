@@ -69,10 +69,10 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "lts/*"
-          cache: "yarn"
+          cache: "pnpm"
 
       - name: Install frontend dependencies
-        run: yarn install
+        run: pnpm install
 
       - name: Build the app
         uses: tauri-apps/tauri-action@dev

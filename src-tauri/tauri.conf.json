@@ -1,26 +1,19 @@
 {
+  "$schema": "../node_modules/@tauri-apps/cli/schema.json",
   "build": {
-    "beforeDevCommand": "yarn dev",
-    "beforeBuildCommand": "yarn build",
+    "beforeBuildCommand": "pnpm build",
+    "beforeDevCommand": "pnpm dev",
     "devPath": "http://localhost:1420",
     "distDir": "../dist",
-    "withGlobalTauri": true
+    "withGlobalTauri": false
   },
   "package": {
-    "productName": "AssistorApp",
+    "productName": "assistor-app",
     "version": "../package.json"
   },
   "tauri": {
-    "macOSPrivateApi": true,
     "allowlist": {
       "all": true,
-      "http": {
-        "all": true,
-        "scope": [
-          "https://**",
-          "http://**"
-        ]
-      },
       "fs": {
         "scope": [
           "**"
@@ -29,6 +22,12 @@
     },
     "bundle": {
       "active": true,
+      "category": "DeveloperTool",
+      "copyright": "",
+      "deb": {
+        "depends": []
+      },
+      "externalBin": [],
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
@@ -37,13 +36,22 @@
         "icons/icon.ico"
       ],
       "identifier": "com.assistor.app",
+      "longDescription": "教务软件",
       "macOS": {
         "entitlements": null,
+        "exceptionDomain": "",
         "frameworks": [],
         "providerShortName": null,
         "signingIdentity": null
       },
-      "targets": "all"
+      "resources": [],
+      "shortDescription": "Assistor-app",
+      "targets": "all",
+      "windows": {
+        "certificateThumbprint": null,
+        "digestAlgorithm": "sha256",
+        "timestampUrl": ""
+      }
     },
     "security": {
       "csp": null
@@ -53,7 +61,7 @@
       "endpoints": [
         "https://gitee.com/lijianran/updater/releases/download/assistor-app-updater/latest.json"
       ],
-      "dialog": true,
+      "dialog": false,
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDRDREM4MTkwRjQ1NUNDRDAKUldUUXpGWDBrSUhjVE5xYUtFcDFIZ2FVL3VRdmZFY29BMURwbGZLZmtjdS9zRjc2b0c0NXRwR1EK"
     },
     "windows": [
@@ -62,7 +70,9 @@
         "resizable": true,
         "title": "assistor-app",
         "width": 800,
-        "height": 600
+        "height": 600,
+        "minWidth": 800,
+        "minHeight": 600
       }
     ]
   }

@@ -15,7 +15,7 @@ import {
 import { ProLayout, PageContainer, ProCard } from "@ant-design/pro-components";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 
-import { emit } from "@tauri-apps/api/event";
+// import { emit } from "@tauri-apps/api/event";
 
 export default () => {
   const location = useLocation();
@@ -43,8 +43,6 @@ export default () => {
         event.preventDefault();
       } else if (key === "e") {
         goHome();
-      } else if (key === "d") {
-        emit("open_devtools");
       } else {
         return;
       }
