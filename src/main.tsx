@@ -4,6 +4,8 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import Home from "./pages/Home";
 import Score from "./pages/Score";
+import Update from "./pages/Update";
+import Settings from "./pages/Settings";
 import ErrorPage from "./pages/ErrorPage";
 
 import zhCN from "antd/locale/zh_CN";
@@ -18,6 +20,8 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
       }}
       locale={zhCN}
     >
+      <Settings />
+
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<App />}>
@@ -36,6 +40,8 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
           </Route>
         </Routes>
       </BrowserRouter>
+
+      <Update />
     </ConfigProvider>
   </React.StrictMode>
 );

@@ -164,21 +164,6 @@ function App() {
     },
   ];
 
-  // 打开文件夹
-  async function openScoreFileDir() {
-    const documentDirPath = await getDocumentDir();
-    const appFileDir = await joinPath(documentDirPath, "教务软件数据");
-    if (await isNotExist(appFileDir)) {
-      await createDirectory(appFileDir);
-    }
-    const scoreFileDir = await joinPath(appFileDir, "成绩统计");
-    if (await isNotExist(scoreFileDir)) {
-      await createDirectory(scoreFileDir);
-    }
-
-    openPath(scoreFileDir);
-  }
-
   // 计算结果
   async function computeResult() {
     // 结果
@@ -419,69 +404,57 @@ function App() {
         <Steps />
 
         <Row justify="space-between">
-          <Col>
-            {tabKey === "成绩数据表" && (
-              <div>
-                <Button
-                  loading={buttonLoading}
-                  onClick={selectFile}
-                  icon={<UploadOutlined />}
-                >
-                  选择成绩表
-                </Button>
-
-                {scoreTableData.length != 0 && <TitleDrawer />}
-              </div>
-            )}
-            {tabKey === "班级信息表" && (
-              <div>
-                <Button
-                  loading={buttonLoading}
-                  onClick={selectFile}
-                  disabled={currentStep < 1 || openDrawer}
-                  icon={<UploadOutlined />}
-                >
-                  选择班级表
-                </Button>
-
-                {classTableData.length != 0 && <TitleDrawer />}
-              </div>
-            )}
-            {tabKey === "参数配置" && (
-              <div>
-                <Button
-                  disabled={currentStep < 2 || openDrawer}
-                  icon={<SettingOutlined />}
-                  onClick={() => emit("save-score-setting")}
-                >
-                  确认配置项
-                </Button>
-              </div>
-            )}
-            {tabKey === "计算结果" && (
-              <div>
-                <Button
-                  disabled={openDrawer}
-                  icon={<FolderOpenOutlined />}
-                  onClick={openScoreFileDir}
-                >
-                  打开文件夹
-                </Button>
-              </div>
-            )}
-          </Col>
-          <Col>
-            {currentStep > 2 && (
+          {tabKey === "成绩数据表" && (
+            <div>
               <Button
-                onClick={computeResult}
+                onClick={selectFile}
+                loading={buttonLoading}
+                icon={<UploadOutlined />}
+              >
+                选择成绩表
+              </Button>
+
+              {scoreTableData.length != 0 && <TitleDrawer />}
+            </div>
+          )}
+          {tabKey === "班级信息表" && (
+            <div>
+              <Button
+                onClick={selectFile}
+                loading={buttonLoading}
+                icon={<UploadOutlined />}
+                disabled={currentStep < 1}
+              >
+                选择班级表
+              </Button>
+
+              {classTableData.length != 0 && <TitleDrawer />}
+            </div>
+          )}
+          {tabKey === "参数配置" && (
+            <div>
+              <Button
                 type="primary"
-                danger
+                icon={<SettingOutlined />}
+                disabled={currentStep < 2 || openDrawer}
+                onClick={() => emit("save-score-setting")}
+              >
+                确认配置
+              </Button>
+            </div>
+          )}
+          {tabKey === "计算结果" && (
+            <div>
+              <Button
+                type="primary"
+                onClick={computeResult}
                 icon={<AreaChartOutlined />}
+                disabled={currentStep < 3 || openDrawer}
               >
                 统计结果
               </Button>
-            )}
-          </Col>
+            </div>
+          )}
         </Row>
 
         <TableTabs items={tabItems} />

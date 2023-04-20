@@ -13,6 +13,7 @@ import {
 } from "@ant-design/icons";
 
 import { ProLayout, PageContainer, ProCard } from "@ant-design/pro-components";
+import { emit } from "@tauri-apps/api/event";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 
 // import { emit } from "@tauri-apps/api/event";
@@ -27,6 +28,16 @@ export default () => {
 
   function goHome() {
     navigate("/");
+  }
+
+  function openSettings() {
+    emit("open-settings");
+  }
+
+  async function openDocs() {
+    const docsPath = await getResourcePath("resources", "docs");
+    
+    openPath(docsPath);
   }
 
   useEffect(() => {
@@ -109,10 +120,10 @@ export default () => {
       // }}
       actionsRender={() => [
         <ReloadOutlined name="test" key="ReloadOutlined" onClick={flush} />,
-        // <InfoCircleOutlined key="InfoCircleOutlined" />,
-        <QuestionCircleOutlined key="QuestionCircleOutlined" />,
+        <InfoCircleOutlined key="InfoCircleOutlined" onClick={openSettings} />,
+        <QuestionCircleOutlined key="QuestionCircleOutlined" onClick={openDocs} />,
         // <MergeCellsOutlined key="MergeCellsOutlined" />,
-        <SettingOutlined />,
+        // <SettingOutlined onClick={openSettings} />,
       ]}
       // menuFooterRender={(props: any) => {
       //   if (props?.collapsed) return undefined;

@@ -1,5 +1,6 @@
 import {
   join,
+  resolveResource,
   appCacheDir,
   appConfigDir,
   appDataDir,
@@ -23,6 +24,13 @@ import {
 export async function joinPath(...paths: string[]) {
   const path = await join(...paths);
   return path;
+}
+
+/** 获取资源路径 */
+export async function getResourcePath(...paths: string[]) {
+  const path = await join(...paths);
+  const resourcePath = await resolveResource(path);
+  return resourcePath;
 }
 
 export async function getAppCacheDir() {

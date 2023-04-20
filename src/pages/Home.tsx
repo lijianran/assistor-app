@@ -5,6 +5,7 @@ import { Typography, Timeline, Space } from "antd";
 const { Title } = Typography;
 
 const HomeLog = [
+  "软件设置和版本更新 2023-04-20",
   "打包上线测试 2023-04-14",
   "完成成绩统计功能 2023-04-13",
   "开始进行教务软件重构开发 2023-04-10",

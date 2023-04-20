@@ -44,7 +44,9 @@
         "providerShortName": null,
         "signingIdentity": null
       },
-      "resources": [],
+      "resources": [
+        "resources/**"
+      ],
       "shortDescription": "Assistor-app",
       "targets": "all",
       "windows": {
