@@ -45,7 +45,7 @@
         "signingIdentity": null
       },
       "resources": [
-        "resources/**"
+        "resources/*"
       ],
       "shortDescription": "Assistor-app",
       "targets": "all",
@@ -64,8 +64,8 @@
     "updater": {
       "active": true,
       "endpoints": [
-        "https://github.com/lijianran/assistor-app/releases/latest/download/latest.json",
-        "https://gitee.com/lijianran/updater/releases/download/assistor-app-updater/latest.json"
+        "https://gitee.com/lijianran/updater/releases/download/assistor-app-updater/latest.json",
+        "https://github.com/lijianran/assistor-app/releases/latest/download/latest.json"
       ],
       "dialog": false,
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDcyMTU1NDBGNEU1M0FCMEEKUldRS3ExTk9EMVFWY3MrQnNlRU1uem9kbmt6aElCZy9uUWtUWXBlV2JFb0d1MXpQLzZqQlR5SHMK"

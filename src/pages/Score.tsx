@@ -393,7 +393,7 @@ function App() {
     const docsPath = await getResourcePath(
       "resources",
       "docs",
-      "成绩统计使用说明"
+      "成绩统计"
     );
 
     openPath(docsPath);
