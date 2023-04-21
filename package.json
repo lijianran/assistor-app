@@ -4,8 +4,9 @@
   "version": "0.1.2",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build && tsc",
+    "dev": "npm run build:icon && vite",
+    "build": "npm run build:icon && vite build && tsc",
+    "build:icon": "tauri icon ./src-tauri/assets/icon.png",
     "preview": "vite preview",
     "tauri": "tauri",
     "prepare": "husky install",
