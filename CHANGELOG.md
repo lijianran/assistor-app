@@ -1,5 +1,13 @@
 
 
+## [0.1.3](https://github.com/lijianran/assistor-app/compare/v0.1.1...v0.1.3) (2023-04-21)
+
+
+### Features
+
+* 增加单例模式，更新软件图标 ([a92ce6e](https://github.com/lijianran/assistor-app/commit/a92ce6e63da804d7b02557396509a5c55d50f823))
+* add new app icon ([4d553af](https://github.com/lijianran/assistor-app/commit/4d553afc57f1392f73cafd4a96715564c7bedcdb))
+
 ## [0.1.2](https://github.com/lijianran/assistor-app/compare/v0.1.1...v0.1.2) (2023-04-21)
 
 ## [0.1.1](https://github.com/lijianran/assistor-app/compare/v0.1.0...v0.1.1) (2023-04-20)
