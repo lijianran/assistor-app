@@ -1,5 +1,12 @@
 
 
+## [0.1.4](https://github.com/lijianran/assistor-app/compare/v0.1.3...v0.1.4) (2023-05-03)
+
+
+### Features
+
+* 完成学生分班功能 ([90559b3](https://github.com/lijianran/assistor-app/commit/90559b3d5b96efca465f7ee71b915c1ecf0cd3ac))
+
 ## [0.1.3](https://github.com/lijianran/assistor-app/compare/v0.1.1...v0.1.3) (2023-04-21)
 
 

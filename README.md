@@ -2,7 +2,7 @@
 
 ![banner](https://socialify.git.ci/lijianran/assistor-app/image?description=1&descriptionEditable=%E6%95%99%E5%8A%A1%E7%B3%BB%E7%BB%9F&language=1&name=1&theme=Light)
 
-![assistor-app](https://img.shields.io/badge/assistor--app-v0.1.3-brightgreen)
+![assistor-app](https://img.shields.io/badge/assistor--app-v0.1.4-brightgreen)
 [![Release](https://github.com/lijianran/assistor-app/actions/workflows/release.yml/badge.svg)](https://github.com/lijianran/assistor-app/actions/workflows/release.yml)
 
 ## 环境配置
