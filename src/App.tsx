@@ -36,7 +36,7 @@ export default () => {
 
   async function openDocs() {
     const docsPath = await getResourcePath("resources", "docs");
-    
+
     openPath(docsPath);
   }
 
@@ -99,8 +99,13 @@ export default () => {
                 icon: <TeamOutlined />,
               },
               {
+                path: "/class/assign",
+                name: "2. 班级分配",
+                icon: <CrownOutlined />,
+              },
+              {
                 path: "/class/adjust",
-                name: "2. 分班调整",
+                name: "3. 分班调整",
                 icon: <CrownOutlined />,
               },
             ],
@@ -121,7 +126,10 @@ export default () => {
       actionsRender={() => [
         <ReloadOutlined name="test" key="ReloadOutlined" onClick={flush} />,
         <InfoCircleOutlined key="InfoCircleOutlined" onClick={openSettings} />,
-        <QuestionCircleOutlined key="QuestionCircleOutlined" onClick={openDocs} />,
+        <QuestionCircleOutlined
+          key="QuestionCircleOutlined"
+          onClick={openDocs}
+        />,
         // <MergeCellsOutlined key="MergeCellsOutlined" />,
         // <SettingOutlined onClick={openSettings} />,
       ]}
