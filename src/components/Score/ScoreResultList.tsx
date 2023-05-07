@@ -42,7 +42,7 @@ const App: React.FC = () => {
       }
     }
 
-    temp = orderBy(temp, ["name"], ["desc"]);
+    temp = mySort(temp, ["name"], ["desc"]);
     temp.map((item, index) => {
       item.index = index;
     });

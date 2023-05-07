@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
 import AutoImport from "unplugin-auto-import/vite";
+import { visualizer } from "rollup-plugin-visualizer";
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
@@ -27,6 +28,7 @@ export default defineConfig(async () => ({
         "./src/utils/*",
       ],
     }),
+    visualizer(),
   ],
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
@@ -47,5 +49,7 @@ export default defineConfig(async () => ({
     minify: !process.env.TAURI_DEBUG ? "esbuild" : false,
     // produce sourcemaps for debug builds
     sourcemap: !!process.env.TAURI_DEBUG,
+    // 打包大小 < 1400 kb
+    chunkSizeWarningLimit: 1400,
   },
 }));

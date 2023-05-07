@@ -39,7 +39,7 @@ function App({ name, currentStep }: any) {
       }
     }
 
-    temp = orderBy(temp, ["name"], ["desc"]);
+    temp = mySort(temp, ["name"], ["desc"]);
     temp.map((item, index) => {
       item.index = index;
     });

@@ -1,5 +1,5 @@
-import _ from "lodash";
+import { orderBy } from "lodash-es";
 
-export function orderBy(data: any[], key: any[], order: any[]) {
-  return _.orderBy(data, key, order);
+export function mySort(data: any[], key: any[], order: any[]) {
+  return orderBy(data, key, order);
 }

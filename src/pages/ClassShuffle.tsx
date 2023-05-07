@@ -24,7 +24,7 @@ import {
   InputNumber,
 } from "antd";
 
-import _ from "lodash";
+import { groupBy, orderBy, forEach, omit, flattenDeep } from "lodash-es";
 
 import type { FormInstance } from "antd/es/form";
 import type { TabsProps } from "antd";
@@ -257,13 +257,13 @@ function App() {
     }
 
     // 按班级分组
-    const groups = _.groupBy(tableData, (item) => {
+    const groups = groupBy(tableData, (item) => {
       return item[params["性别"]];
     });
     console.log("性别分组", groups);
 
     // 分班
-    _.forEach(groups, (students, gender) => {
+    forEach(groups, (students, gender) => {
       let flag = true;
       if (gender === "男") {
         flag = true;
@@ -275,10 +275,10 @@ function App() {
       }
 
       // 按总分排序
-      groups[gender] = _.orderBy(students, [params["总分"]], ["desc"]);
+      groups[gender] = orderBy(students, [params["总分"]], ["desc"]);
       console.log("总分排序", gender, students);
-      _.forEach(students, (student, index) => {
-        student = _.omit(student, "key");
+      forEach(students, (student, index) => {
+        student = omit(student, "key");
 
         if (flag) {
           classList[index % classNum].push({
@@ -299,9 +299,9 @@ function App() {
 
     console.log("分班级", classList);
 
-    _.forEach(classList, (classItem, index) => {
+    forEach(classList, (classItem, index) => {
       // 按总分排序
-      classList[index] = _.orderBy(classItem, [params["总分"]], ["desc"]);
+      classList[index] = orderBy(classItem, [params["总分"]], ["desc"]);
     });
 
     console.log("排序", classList);
@@ -319,7 +319,7 @@ function App() {
     }
 
     // 结果
-    const table = _.flattenDeep(classList);
+    const table = flattenDeep(classList);
     console.log("结果", table);
     const path = await joinPath(saveDirPath, "分班结果.xlsx");
 
