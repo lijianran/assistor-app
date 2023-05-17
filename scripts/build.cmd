@@ -16,4 +16,7 @@ echo ----------------------------------------
 echo Start to build the app
 call pnpm tauri build
 
+start https://gitee.com/lijianran/updater/releases
+start %~dp0..\src-tauri\target\release\bundle\msi
+
 @REM pause
