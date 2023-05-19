@@ -45,7 +45,8 @@
         "signingIdentity": null
       },
       "resources": [
-        "resources/*"
+        "resources/dev/*",
+        "resources/docs/docs.zip"
       ],
       "shortDescription": "Assistor-app",
       "targets": "all",

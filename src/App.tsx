@@ -34,12 +34,6 @@ export default () => {
     emit("open-settings");
   }
 
-  async function openDocs() {
-    const docsPath = await getResourcePath("resources", "docs");
-
-    openPath(docsPath);
-  }
-
   useEffect(() => {
     window.addEventListener("keydown", (event: KeyboardEvent) => {
       const key = event.key.toLowerCase();
@@ -128,7 +122,7 @@ export default () => {
         <InfoCircleOutlined key="InfoCircleOutlined" onClick={openSettings} />,
         <QuestionCircleOutlined
           key="QuestionCircleOutlined"
-          onClick={openDocs}
+          onClick={openDocsFolder}
         />,
         // <MergeCellsOutlined key="MergeCellsOutlined" />,
         // <SettingOutlined onClick={openSettings} />,

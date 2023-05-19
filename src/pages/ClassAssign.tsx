@@ -96,13 +96,6 @@ function App() {
     },
   ];
 
-  // 打开文档
-  async function openDocsFolder() {
-    const docsPath = await getResourcePath("resources", "docs", "班级分配");
-
-    openPath(docsPath);
-  }
-
   // 选择表格文件
   async function selectFile() {
     setButtonLoading(true);

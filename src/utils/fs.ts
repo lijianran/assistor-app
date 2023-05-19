@@ -34,3 +34,10 @@ export async function readDirectoryData(path: string) {
   const entries = await readDir(path, { recursive: true });
   return entries;
 }
+
+// 打开文档目录
+export async function openDocsFolder() {
+  const docsPath = await getResourcePath("resources", "docs");
+
+  openPath(docsPath);
+}

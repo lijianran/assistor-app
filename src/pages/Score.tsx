@@ -357,12 +357,6 @@ function App() {
     setCurrentStep(4);
   }
 
-  async function openDocsFolder() {
-    const docsPath = await getResourcePath("resources", "docs", "成绩统计");
-
-    openPath(docsPath);
-  }
-
   const location = useLocation();
   useEffect(() => {
     setCurrentStep(0);

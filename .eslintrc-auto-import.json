@@ -29,6 +29,7 @@
     "lazy": true,
     "memo": true,
     "mySort": true,
+    "openDocsFolder": true,
     "openPath": true,
     "openPathDir": true,
     "readDirectoryData": true,
