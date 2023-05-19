@@ -37,46 +37,6 @@ import ScoreResultList from "../components/Score/ScoreResultList";
 
 const { Title } = Typography;
 
-// 获取表格数据
-function getTableData(fileData: any[]) {
-  const firstLine = fileData[0];
-
-  let titleOptions = [];
-  let titleInit: { [key: string]: string } = {};
-  let columns = [];
-  const keys = Object.keys(firstLine);
-  for (let index = 0; index < keys.length; index++) {
-    const key = keys[index];
-
-    titleOptions.push({
-      label: "第" + (index + 1) + "列【" + key + "】",
-      value: key,
-    });
-
-    titleInit[key] = key;
-
-    columns.push({
-      title: key,
-      dataIndex: key,
-      key: key,
-    });
-  }
-
-  let tableData = [];
-  for (let index = 0; index < fileData.length; index++) {
-    let element = fileData[index];
-    element["key"] = index + 1;
-    tableData.push(element);
-  }
-
-  return {
-    columns: columns,
-    tableData: tableData,
-    titleInit: titleInit,
-    titleOptions: titleOptions,
-  };
-}
-
 function App() {
   // store
   const currentStep = useScoreStore((state) => state.currentStep);

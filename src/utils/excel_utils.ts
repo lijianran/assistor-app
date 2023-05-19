@@ -1,4 +1,5 @@
-// import { read, write, utils } from "xlsx";
+import { read, write, utils } from "xlsx";
+// import * as XLSX from "xlsx";
 import {
   readBinaryFile,
   writeBinaryFile,
@@ -7,20 +8,18 @@ import {
 
 export async function readExcelFile(filePath: string) {
   const contents = await readBinaryFile(filePath);
+
+  const workbook = read(contents);
+
   let resData: any[] = [];
-
-  import("xlsx").then((XLSX) => {
-    const workbook = XLSX.read(contents);
-
-    // 遍历每张工作表进行读取（这里默认只读取第一张表）
-    for (const sheet in workbook.Sheets) {
-      if (workbook.Sheets.hasOwnProperty(sheet)) {
-        // 利用 sheet_to_json 方法将 excel 转成 json 数据
-        resData = XLSX.utils.sheet_to_json(workbook.Sheets[sheet]);
-        break; // 如果只取第一张表，就取消注释这行
-      }
+  // 遍历每张工作表进行读取（这里默认只读取第一张表）
+  for (const sheet in workbook.Sheets) {
+    if (workbook.Sheets.hasOwnProperty(sheet)) {
+      // 利用 sheet_to_json 方法将 excel 转成 json 数据
+      resData = utils.sheet_to_json(workbook.Sheets[sheet]);
+      break; // 如果只取第一张表，就取消注释这行
     }
-  });
+  }
 
   return resData;
 }
@@ -30,14 +29,12 @@ export async function writeExcelFile(
   data: any[],
   header: string[]
 ) {
-  let buffer: any;
-  import("xlsx").then((XLSX) => {
-    const sheet = XLSX.utils.json_to_sheet(data, { header });
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, sheet, "Sheet1");
+  const sheet = utils.json_to_sheet(data, { header });
+  const workbook = utils.book_new();
+  utils.book_append_sheet(workbook, sheet, "Sheet1");
 
-    buffer = XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });
-  });
+  const buffer = write(workbook, { bookType: "xlsx", type: "buffer" });
+
   await writeBinaryFile(filePath, buffer);
 }
 
