@@ -24,7 +24,16 @@ import {
   InputNumber,
 } from "antd";
 
-import { groupBy, orderBy, forEach, omit, flattenDeep } from "lodash-es";
+import {
+  groupBy,
+  orderBy,
+  forEach,
+  omit,
+  countBy,
+  meanBy,
+  round,
+  flattenDeep,
+} from "lodash-es";
 
 import type { FormInstance } from "antd/es/form";
 import type { TabsProps } from "antd";
@@ -116,11 +125,11 @@ function App() {
 
       data.push({
         key: index,
-        学籍号: "xxxx",
-        班级: "xxxx",
-        姓名: "xxxx",
-        总分: "xxxx",
-        性别: "xxxx",
+        学籍号: "******",
+        班级: "******",
+        姓名: "******",
+        总分: "******",
+        性别: "******",
       });
     }
     setTableColumns(columns);
@@ -256,7 +265,7 @@ function App() {
       classList[index] = [];
     }
 
-    // 按班级分组
+    // 按性别分组
     const groups = groupBy(tableData, (item) => {
       return item[params["性别"]];
     });
@@ -282,16 +291,16 @@ function App() {
 
         if (flag) {
           classList[index % classNum].push({
-            班级号: (index % classNum) + 1,
+            抽签号码: (index % classNum) + 1,
             ...student,
           });
         } else {
           classList[classNum - 1 - (index % classNum)].push({
-            班级号: classNum - (index % classNum),
+            抽签号码: classNum - (index % classNum),
             ...student,
           });
         }
-        if (index % classNum === 0) {
+        if ((index + 1) % classNum === 0) {
           flag = !flag;
         }
       });
@@ -299,12 +308,26 @@ function App() {
 
     console.log("分班级", classList);
 
+    // 班级信息
+    let classInfo: any[] = [];
+
     forEach(classList, (classItem, index) => {
       // 按总分排序
       classList[index] = orderBy(classItem, [params["总分"]], ["desc"]);
+
+      // 统计班级信息
+      const countResult = countBy(classList[index], params["性别"]);
+      classInfo.push({
+        抽签号码: index + 1,
+        人数: classList[index].length,
+        男生: countResult["男"],
+        女生: countResult["女"],
+        均分: round(meanBy(classList[index], params["总分"]), 2),
+      });
     });
 
     console.log("排序", classList);
+    console.log("班级信息", classInfo);
 
     // 导出路径
     const documentDirPath = await getDocumentDir();
@@ -322,8 +345,10 @@ function App() {
     const table = flattenDeep(classList);
     console.log("结果", table);
     const path = await joinPath(saveDirPath, "分班结果.xlsx");
+    const infoPath = await joinPath(saveDirPath, "班级信息.xlsx");
 
     await writeExcelFile(path, table, Object.keys(table[0]));
+    await writeExcelFile(infoPath, classInfo, Object.keys(classInfo[0]));
 
     messageApi.success("分班成功");
     // 打开路径
