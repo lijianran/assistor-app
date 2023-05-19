@@ -1,5 +1,23 @@
 
 
+## [0.1.5](https://github.com/lijianran/assistor-app/compare/v0.1.4...v0.1.5) (2023-05-19)
+
+
+### Bug Fixes
+
+* 修复excel读取写入bug ([bcecdf8](https://github.com/lijianran/assistor-app/commit/bcecdf820f05535738e60a3cd76a4611f6282f9e))
+
+
+### Features
+
+* 完成班级分配功能 ([797c49a](https://github.com/lijianran/assistor-app/commit/797c49aaf32a357586d6472f091c70f8b0c1b305))
+* 修复学生分班bug，新增班级信息统计功能 ([641b08b](https://github.com/lijianran/assistor-app/commit/641b08bcc40602fe62514ab980422d7dd420c7d7))
+
+
+### Performance Improvements
+
+* 按需引入lodash xlsx等 ([3a11b0c](https://github.com/lijianran/assistor-app/commit/3a11b0c684003148c5d620874e6b457d1da28ab7))
+
 ## [0.1.4](https://github.com/lijianran/assistor-app/compare/v0.1.3...v0.1.4) (2023-05-03)
 
 
