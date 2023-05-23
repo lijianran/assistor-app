@@ -15,9 +15,3 @@ export TAURI_KEY_PASSWORD='lijianran'
 echo --------------------
 echo Start to build the app
 pnpm tauri build
-
-if ["$(uname)" == "Darwin"]; then
-    open https://gitee.com/lijianran/updater/releases
-else
-    xdg-open https://gitee.com/lijianran/updater/releases
-fi

@@ -45,7 +45,7 @@ function App() {
   // message
   const [messageApi, contextHolder] = message.useMessage();
 
-  const [tabKey, setTabKey] = useState("成绩表格");
+  const [tabKey, setTabKey] = useState("分班表格");
   const [currentStep, setCurrentStep] = useState(0);
   const [buttonLoading, setButtonLoading] = useState<boolean>(false);
 
@@ -54,13 +54,31 @@ function App() {
   const [params, setParams] = useState<any>({});
 
   const [assignTableData, setAssignTableData] = useState<any[]>([]);
-  const [assignTableColumns, setAssignTableColumns] = useState<any[]>([
-    { title: "抽签号码", dataIndex: "抽签号码", key: "抽签号码", align: "center" },
-    { title: "班级", dataIndex: "班级", key: "班级", align: "center" },
-  ]);
+  const [assignTableColumns, setAssignTableColumns] = useState<any[]>([]);
 
   const [inputItems, setInputItems] = useState<any>();
   const formRef = React.useRef<FormInstance>(null);
+
+  useEffect(() => {
+    const nessary_columns = ["抽签号码", "性别", "总分"];
+    setTableColumns(
+      nessary_columns.map((item) => ({
+        title: item,
+        dataIndex: item,
+        key: item,
+      }))
+    );
+
+    const assign_columns = ["抽签号码", "班级"];
+    setAssignTableColumns(
+      assign_columns.map((item) => ({
+        title: item,
+        dataIndex: item,
+        key: item,
+        align: "center",
+      }))
+    );
+  }, []);
 
   // 检查输入班级是否重复
   function handleValidator(rule: any, value: any) {
@@ -246,8 +264,8 @@ function App() {
   // tab
   const tabItems: TabsProps["items"] = [
     {
-      key: "成绩表格",
-      label: `成绩表格`,
+      key: "分班表格",
+      label: `分班表格`,
       children: <Table columns={tableColumns} dataSource={tableData} />,
     },
     {
@@ -301,7 +319,7 @@ function App() {
     }
 
     // 班级表
-    const path = await joinPath(saveDirPath, "班级表.xlsx");
+    const path = await joinPath(saveDirPath, "分班表.xlsx");
     await writeExcelFile(path, result, Object.keys(result[0]));
 
     // 信息表
@@ -338,7 +356,7 @@ function App() {
       <Space direction="vertical" size={"large"} wrap>
         <Steps current={currentStep} items={stepItems} type="default" />
         <Row justify="space-between">
-          {tabKey === "成绩表格" && (
+          {tabKey === "分班表格" && (
             <div>
               <Button
                 type="primary"

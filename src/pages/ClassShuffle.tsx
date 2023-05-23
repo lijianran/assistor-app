@@ -104,31 +104,6 @@ function App() {
     }
   }
 
-  useEffect(() => {
-    let data = [];
-    let columns = [];
-    const nessary_columns = ["学籍号", "班级", "姓名", "总分", "性别"];
-    for (let index = 0; index < nessary_columns.length; index++) {
-      const column = nessary_columns[index];
-      columns.push({
-        key: column,
-        title: column,
-        dataIndex: column,
-      });
-
-      data.push({
-        key: index,
-        学籍号: "******",
-        班级: "******",
-        姓名: "******",
-        总分: "******",
-        性别: "******",
-      });
-    }
-    setTableColumns(columns);
-    setTableData(data);
-  }, []);
-
   // 配置参数
   const settingFormRef = React.useRef<FormInstance>(null);
 
@@ -168,9 +143,6 @@ function App() {
     messageApi.error("参数配置失败");
   };
   const titleDict: { [key: string]: boolean } = {
-    学籍号: true,
-    班级: true,
-    姓名: true,
     总分: true,
     性别: true,
   };
@@ -335,12 +307,16 @@ function App() {
     }
 
     // 结果
-    const table = flattenDeep(classList);
-    console.log("结果", table);
-    const path = await joinPath(saveDirPath, "分班结果.xlsx");
-    const infoPath = await joinPath(saveDirPath, "班级信息.xlsx");
+    const result = flattenDeep(classList).map((student) => ({
+      ...student,
+      总分: student[params["总分"]],
+      性别: student[params["性别"]],
+    }));
+    console.log("结果", result);
+    const path = await joinPath(saveDirPath, "分班表.xlsx");
+    const infoPath = await joinPath(saveDirPath, "信息表.xlsx");
 
-    await writeExcelFile(path, table, Object.keys(table[0]));
+    await writeExcelFile(path, result, Object.keys(result[0]));
     await writeExcelFile(infoPath, classInfo, Object.keys(classInfo[0]));
 
     messageApi.success("分班成功");
