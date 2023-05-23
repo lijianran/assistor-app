@@ -84,7 +84,7 @@ export default () => {
           },
           {
             name: "班级管理",
-            icon: <UserSwitchOutlined />,
+            icon: <TeamOutlined />,
             path: "/class",
             routes: [
               {

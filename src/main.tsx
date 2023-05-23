@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import Score from "./pages/Score";
 import ClassShutffle from "./pages/ClassShuffle";
 import ClassAssign from "./pages/ClassAssign";
+import ClassAdjust from "./pages/ClassAdjust";
 import Update from "./pages/Update";
 import Settings from "./pages/Settings";
 import ErrorPage from "./pages/ErrorPage";
@@ -31,10 +32,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
             <Route path="/score" element={<Score />} />
             <Route path="/class/shuffle" element={<ClassShutffle />} />
             <Route path="/class/assign" element={<ClassAssign />} />
-            <Route
-              path="/class/adjust"
-              element={<Empty description="敬请期待【分班调整】功能" />}
-            />
+            <Route path="/class/adjust" element={<ClassAdjust />} />
 
             <Route path="*" element={<ErrorPage />} />
           </Route>
