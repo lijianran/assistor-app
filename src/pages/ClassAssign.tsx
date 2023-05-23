@@ -285,7 +285,6 @@ function App() {
     let result = tableData.map((student) => {
       student["新班级"] = params[student["抽签号码"]];
       student = omit(student, "key");
-      student = omit(student, "抽签号码");
 
       return student;
     });

@@ -249,7 +249,7 @@ function App() {
       }
 
       // 按总分排序
-      groups[gender] = orderBy(students, [params["总分"]], ["desc"]);
+      students = orderBy(students, [params["总分"]], ["desc"]);
       console.log("总分排序", gender, students);
       forEach(students, (student, index) => {
         student = omit(student, "key");

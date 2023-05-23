@@ -27,6 +27,7 @@ import {
   countBy,
   meanBy,
   round,
+  random,
   cloneDeep,
 } from "lodash-es";
 
@@ -147,12 +148,13 @@ function App() {
 
   // 分班函数
   function swap_student(data: any, student: any, targets: any) {
-    const stuIndex = targets[0]["key"] - 1;
-    const targetClass = targets[0]["新班级"];
+    const randomIndex = random(0, targets.length - 1);
+    const stuIndex = targets[randomIndex]["key"] - 1;
+    const targetClass = targets[randomIndex]["最终班级"];
 
-    data[stuIndex]["新班级"] = student["新班级"];
+    data[stuIndex]["最终班级"] = student["最终班级"];
     data[stuIndex]["备注"] = "换出";
-    student["新班级"] = targetClass;
+    student["最终班级"] = targetClass;
     student["备注"] = "成功";
   }
   function try_swap(data: any, student: any, target: any) {
@@ -164,7 +166,7 @@ function App() {
     targetStudents = filter(data, function (o) {
       return (
         !o["目标班级"] &&
-        o["新班级"] == target &&
+        o["最终班级"] == target &&
         o["总分"] === score &&
         o["性别"] === gender
       );
@@ -176,7 +178,7 @@ function App() {
 
     // 相同总分 不考虑性别
     targetStudents = filter(data, function (o) {
-      return !o["目标班级"] && o["新班级"] == target && o["总分"] === score;
+      return !o["目标班级"] && o["最终班级"] == target && o["总分"] === score;
     });
     if (targetStudents.length) {
       swap_student(data, student, targetStudents);
@@ -187,7 +189,7 @@ function App() {
     targetStudents = filter(data, function (o) {
       return (
         !o["目标班级"] &&
-        o["新班级"] == target &&
+        o["最终班级"] == target &&
         o["总分"] >= score - scoreLimit &&
         o["总分"] <= score + scoreLimit &&
         o["性别"] === gender
@@ -202,7 +204,7 @@ function App() {
     targetStudents = filter(data, function (o) {
       return (
         !o["目标班级"] &&
-        o["新班级"] == target &&
+        o["最终班级"] == target &&
         o["总分"] >= score - scoreLimit &&
         o["总分"] <= score + scoreLimit
       );
@@ -265,16 +267,17 @@ function App() {
 
   // 分班调整
   async function adjustClass() {
-    let data = cloneDeep(tableData);
+    // let data = cloneDeep(tableData);
+    let data = tableData.map((item) => ({ ...item, 最终班级: item["新班级"] }));
     const classNameList = uniqBy(data, "新班级").map((item) => item["新班级"]);
 
     forEach(data, (student) => {
-      const target = student["目标班级"];
+      const target = cloneDeep(student["目标班级"]);
 
       if (!target) {
         return;
       }
-      if (target === student["新班级"]) {
+      if (target === student["最终班级"]) {
         student["备注"] = "成功";
         return;
       }
@@ -305,7 +308,7 @@ function App() {
     // 班级信息
     let classInfo: any[] = [];
     // 按班级分组
-    const classes = groupBy(tableData, "新班级");
+    const classes = groupBy(data, "最终班级");
     forEach(classes, (classData, className) => {
       // 统计班级信息
       const countResult = countBy(classData, "性别");
