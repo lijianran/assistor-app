@@ -1,5 +1,12 @@
 
 
+## [0.1.7](https://github.com/lijianran/assistor-app/compare/v0.1.6...v0.1.7) (2023-05-23)
+
+
+### Bug Fixes
+
+* 修复学生分班中排序bug，取消删除班级分配中的抽签号码，新增分班调整里的最终班级 ([7bdc37e](https://github.com/lijianran/assistor-app/commit/7bdc37e30f2d3594ad5c9d759b7fbd1cf162b2f5))
+
 ## [0.1.6](https://github.com/lijianran/assistor-app/compare/v0.1.1...v0.1.6) (2023-05-23)
 
 
