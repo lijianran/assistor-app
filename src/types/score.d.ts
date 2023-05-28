@@ -135,9 +135,15 @@ declare type ScoreSetting = {
   totalScore: number;
   kindGood: number;
   kindOk: number;
+  class1: number;
+  class2: number;
+  classLimit: number;
 
   setSubjectScore: (val: SubjectScore) => void;
   setTotalScore: (val: number) => void;
   setKindGood: (val: number) => void;
   setKindOk: (val: number) => void;
+  setClass1: (val: number) => void;
+  setClass2: (val: number) => void;
+  setClassLimit: (val: number) => void;
 };

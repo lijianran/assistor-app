@@ -60,6 +60,9 @@ function App() {
   const subjectScore = useScoreSettingStore((state) => state.subjectScore);
   const kindGood = useScoreSettingStore((state) => state.kindGood);
   const kindOk = useScoreSettingStore((state) => state.kindOk);
+  const class1 = useScoreSettingStore((state) => state.class1);
+  const class2 = useScoreSettingStore((state) => state.class2);
+  const classLimit = useScoreSettingStore((state) => state.classLimit);
 
   // 表格数据
   const [scoreColumns, setScoreColumns] = useState<any[]>([]);
@@ -166,6 +169,45 @@ function App() {
     const classInfoDict = keyBy(classTableData, classTitleIndex["班级"]);
     console.log("班级信息", classInfoDict);
 
+    // 按总分排序
+    const tsIndex = scoreTitleIndex["总分"];
+    const sortTotalScore = orderBy(scoreTableData, [tsIndex], ["desc"]);
+    // 尖子生边界分数
+    if (classLimit < class1 + class2) {
+      messageApi.error("尖子生范围小于尖子生总数");
+      return;
+    }
+    let classScoreDict: { [key: string]: number } = {};
+    const class1TotalScore = sortTotalScore[class1 - 1][tsIndex];
+    const class2TotalScore = sortTotalScore[class1 + class2 - 1][tsIndex];
+    const classLimitScore = sortTotalScore[classLimit - 1][tsIndex];
+
+    classScoreDict["总分一类"] = class1TotalScore;
+    classScoreDict["总分二类"] = class2TotalScore;
+    console.log("一类尖子生总分", class1TotalScore);
+    console.log("二类尖子生总分", class2TotalScore);
+    console.log(classLimit, "名学生总分为", classLimitScore);
+
+    const classLimitSort = filter(
+      sortTotalScore,
+      (stu) => stu[scoreTitleIndex["总分"]] >= classLimitScore
+    );
+    forEach(targetSubjuects, (subject) => {
+      // 表中索引
+      const index = scoreTitleIndex[subject];
+      // 不统计
+      if (index === "无" || subject === "总分") {
+        return;
+      }
+
+      // 单科一类二类分数
+      const subjectSort = orderBy(classLimitSort, [index], ["desc"]);
+      classScoreDict[subject + "一类"] = subjectSort[class1 - 1][index];
+      classScoreDict[subject + "二类"] =
+        subjectSort[class1 + class2 - 1][index];
+    });
+    console.log("尖子生边界分数", classScoreDict);
+
     // 按班级分组
     const groups = groupBy(scoreTableData, (item) => {
       return item[scoreTitleIndex["班级"]];
@@ -251,6 +293,21 @@ function App() {
         table[className][subject + "及格人数"] = okNum;
         table[className][subject + "及格率"] = okRatio;
         table[className][subject + "综合"] = round(total, 2);
+
+        // 统计尖子生个数
+        const class1Num = filter(
+          scores,
+          (stu) =>
+            stu[scoreTitleIndex[subject]] >= classScoreDict[subject + "一类"]
+        ).length;
+        const class2Num = filter(
+          scores,
+          (stu) =>
+            stu[scoreTitleIndex[subject]] < classScoreDict[subject + "一类"] &&
+            stu[scoreTitleIndex[subject]] >= classScoreDict[subject + "二类"]
+        ).length;
+        table[className][subject + "一类"] = class1Num;
+        table[className][subject + "二类"] = class2Num;
       });
     });
 
@@ -316,6 +373,8 @@ function App() {
       "及格率排名",
       "综合",
       "综合排名",
+      "一类",
+      "二类",
     ];
     forEach(targetSubjuects, async (subject) => {
       // 不导出

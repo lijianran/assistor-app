@@ -13,8 +13,18 @@ function App() {
   const totalScore = useScoreSettingStore((state) => state.totalScore);
   const kindGood = useScoreSettingStore((state) => state.kindGood);
   const kindOk = useScoreSettingStore((state) => state.kindOk);
-  const { setSubjectScore, setTotalScore, setKindGood, setKindOk } =
-    useScoreSettingStore.getState();
+  const class1 = useScoreSettingStore((state) => state.class1);
+  const class2 = useScoreSettingStore((state) => state.class2);
+  const classLimit = useScoreSettingStore((state) => state.classLimit);
+  const {
+    setSubjectScore,
+    setTotalScore,
+    setKindGood,
+    setKindOk,
+    setClass1,
+    setClass2,
+    setClassLimit,
+  } = useScoreSettingStore.getState();
 
   // 表格
   const settingFormRef = React.useRef<FormInstance>(null);
@@ -75,6 +85,9 @@ function App() {
     setTotalScore(values["总分"]);
     setKindGood(values["优秀"]);
     setKindOk(values["及格"]);
+    setClass1(values["一类尖子生"]);
+    setClass2(values["二类尖子生"]);
+    setClassLimit(values["尖子生范围"]);
     if (currentStep < 3) {
       setCurrentStep(3);
       setTabKey("计算结果");
@@ -99,6 +112,9 @@ function App() {
           总分: totalScore,
           优秀: kindGood,
           及格: kindOk,
+          一类尖子生: class1,
+          二类尖子生: class2,
+          尖子生范围: classLimit,
         }}
         validateMessages={{ required: "请配置 '${name}'" }}
       >
@@ -133,6 +149,42 @@ function App() {
                   max={100}
                   placeholder="及格"
                   addonAfter="%"
+                />
+              </Form.Item>
+              <Form.Item
+                name="一类尖子生"
+                label="一类尖子生"
+                rules={[{ required: true }]}
+              >
+                <InputNumber
+                  min={0}
+                  max={10000}
+                  placeholder="一类尖子生个数"
+                  addonAfter="个"
+                />
+              </Form.Item>
+              <Form.Item
+                name="二类尖子生"
+                label="二类尖子生"
+                rules={[{ required: true }]}
+              >
+                <InputNumber
+                  min={0}
+                  max={10000}
+                  placeholder="二类尖子生个数"
+                  addonAfter="个"
+                />
+              </Form.Item>
+              <Form.Item
+                name="尖子生范围"
+                label="尖子生范围"
+                rules={[{ required: true }]}
+              >
+                <InputNumber
+                  min={0}
+                  max={10000}
+                  placeholder="尖子生范围"
+                  addonAfter="个"
                 />
               </Form.Item>
             </Card>

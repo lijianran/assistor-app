@@ -187,6 +187,9 @@ export const useScoreSettingStore = create<
         totalScore: 690,
         kindGood: 80,
         kindOk: 60,
+        class1: 330,
+        class2: 660,
+        classLimit: 1200,
 
         setSubjectScore: (val) => {
           set({ subjectScore: val });
@@ -199,6 +202,15 @@ export const useScoreSettingStore = create<
         },
         setKindOk(val) {
           set({ kindOk: val });
+        },
+        setClass1(val) {
+          set({ class1: val });
+        },
+        setClass2(val) {
+          set({ class2: val });
+        },
+        setClassLimit(val) {
+          set({ classLimit: val });
         },
       }),
       {
