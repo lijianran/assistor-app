@@ -1,5 +1,12 @@
 
 
+## [0.1.8](https://github.com/lijianran/assistor-app/compare/v0.1.7...v0.1.8) (2023-05-28)
+
+
+### Features
+
+* 新增成绩统计模块中统计尖子生功能 ([c0422a2](https://github.com/lijianran/assistor-app/commit/c0422a2a9aaa9cff9e9d6bf55b8558d7b7a057e9))
+
 ## [0.1.7](https://github.com/lijianran/assistor-app/compare/v0.1.6...v0.1.7) (2023-05-23)
 
 
