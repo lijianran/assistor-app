@@ -295,13 +295,17 @@ function App() {
         table[className][subject + "综合"] = round(total, 2);
 
         // 统计尖子生个数
-        const class1Num = filter(
+        const classLimit = filter(
           scores,
+          (stu) => stu[scoreTitleIndex["总分"]] >= classLimitScore
+        );
+        const class1Num = filter(
+          classLimit,
           (stu) =>
             stu[scoreTitleIndex[subject]] >= classScoreDict[subject + "一类"]
         ).length;
         const class2Num = filter(
-          scores,
+          classLimit,
           (stu) =>
             stu[scoreTitleIndex[subject]] < classScoreDict[subject + "一类"] &&
             stu[scoreTitleIndex[subject]] >= classScoreDict[subject + "二类"]
