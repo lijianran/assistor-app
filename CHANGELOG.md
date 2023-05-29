@@ -1,5 +1,12 @@
 
 
+# [0.2.0](https://github.com/lijianran/assistor-app/compare/v0.1.8...v0.2.0) (2023-05-29)
+
+
+### Bug Fixes
+
+* 修复尖子生统计bug ([6ee4a93](https://github.com/lijianran/assistor-app/commit/6ee4a939a006cfa086e10d00376407b9f324f531))
+
 ## [0.1.8](https://github.com/lijianran/assistor-app/compare/v0.1.7...v0.1.8) (2023-05-28)
 
 
