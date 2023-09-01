@@ -4,14 +4,16 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import Home from "./pages/Home";
 import Score from "./pages/Score";
-import ClassShutffle from "./pages/ClassShuffle";
-import ClassAssign from "./pages/ClassAssign";
-import ClassAdjust from "./pages/ClassAdjust";
+
+import ClassShutffle from "./pages/class/ClassShuffle";
+import ClassAssign from "./pages/class/ClassAssign";
+import ClassAdjust from "./pages/class/ClassAdjust";
+
+import TableGroup from "./pages/tools/TableGroup";
+
 import Update from "./pages/Update";
 import Settings from "./pages/Settings";
 import ErrorPage from "./pages/ErrorPage";
-
-import TableGroup from "./pages/tools/TableGroup";
 
 import zhCN from "antd/locale/zh_CN";
 import { ConfigProvider, Empty, theme } from "antd";

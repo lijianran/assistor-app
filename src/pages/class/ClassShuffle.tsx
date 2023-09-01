@@ -38,7 +38,7 @@ import {
 import type { FormInstance } from "antd/es/form";
 import type { TabsProps } from "antd";
 
-import ResultList from "../components/Class/ResultList";
+import ResultList from "../../components/Class/ResultList";
 
 const { Title } = Typography;
 const { Option } = Select;

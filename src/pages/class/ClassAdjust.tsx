@@ -34,7 +34,7 @@ import {
 
 import type { TabsProps } from "antd";
 
-import ResultList from "../components/Class/ResultList";
+import ResultList from "../../components/Class/ResultList";
 
 const { Title } = Typography;
 
