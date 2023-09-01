@@ -1,5 +1,22 @@
 
 
+## [0.2.1](https://github.com/lijianran/assistor-app/compare/v0.2.0...v0.2.1) (2023-09-01)
+
+
+### Bug Fixes
+
+* 更新主页日志家在逻辑 ([a2b3409](https://github.com/lijianran/assistor-app/commit/a2b3409b5471f76e22c6b2bb74f2c887b7750438))
+
+
+### Features
+
+* 新增数据分组功能 ([df0b8b8](https://github.com/lijianran/assistor-app/commit/df0b8b81e0b85b10ccb2400cd925e9a0c437d24f))
+
+
+### Performance Improvements
+
+* 优化主页cpu占用 ([c74f3cc](https://github.com/lijianran/assistor-app/commit/c74f3cc310f83701fdbca6739e2e86564ee2fe50))
+
 # [0.2.0](https://github.com/lijianran/assistor-app/compare/v0.1.8...v0.2.0) (2023-05-29)
 
 
