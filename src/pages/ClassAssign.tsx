@@ -266,7 +266,13 @@ function App() {
     {
       key: "分班表格",
       label: `分班表格`,
-      children: <Table columns={tableColumns} dataSource={tableData} />,
+      children: (
+        <Table
+          columns={tableColumns}
+          dataSource={tableData}
+          scroll={{ x: true }}
+        />
+      ),
     },
     {
       key: "班级分配",
@@ -352,9 +358,12 @@ function App() {
         />
       </Title>
 
-      <Space direction="vertical" size={"large"} wrap>
-        <Steps current={currentStep} items={stepItems} type="default" />
-        <Row justify="space-between">
+      <Row gutter={[0, 24]}>
+        <Col span={24}>
+          <Steps current={currentStep} items={stepItems} type="default" />
+        </Col>
+
+        <Col span={24}>
           {tabKey === "分班表格" && (
             <div>
               <Button
@@ -391,16 +400,18 @@ function App() {
               </Button>
             </div>
           )}
-        </Row>
+        </Col>
 
-        <Tabs
-          activeKey={tabKey}
-          items={tabItems}
-          onTabClick={(key) => {
-            setTabKey(key);
-          }}
-        />
-      </Space>
+        <Col span={24}>
+          <Tabs
+            activeKey={tabKey}
+            items={tabItems}
+            onTabClick={(key) => {
+              setTabKey(key);
+            }}
+          />
+        </Col>
+      </Row>
     </>
   );
 }

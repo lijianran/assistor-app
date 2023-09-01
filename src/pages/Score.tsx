@@ -6,7 +6,7 @@ import {
   QuestionCircleOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
-import { message, Button, Typography, Row, Space, Table } from "antd";
+import { message, Button, Typography, Row, Col, Space, Table } from "antd";
 
 import type { TabsProps, TourProps } from "antd";
 
@@ -120,13 +120,25 @@ function App() {
     {
       key: "成绩数据表",
       label: `成绩数据表`,
-      children: <Table columns={scoreColumns} dataSource={scoreTableData} />,
+      children: (
+        <Table
+          columns={scoreColumns}
+          dataSource={scoreTableData}
+          scroll={{ x: true }}
+        />
+      ),
       disabled: tabKey != "成绩数据表" && openDrawer,
     },
     {
       key: "班级信息表",
       label: `班级信息表`,
-      children: <Table columns={classColumns} dataSource={classTableData} />,
+      children: (
+        <Table
+          columns={classColumns}
+          dataSource={classTableData}
+          scroll={{ x: true }}
+        />
+      ),
       disabled: tabKey != "班级信息表" && openDrawer,
     },
     {
@@ -438,10 +450,12 @@ function App() {
         />
       </Title>
 
-      <Space direction="vertical" size={"large"} wrap>
-        <Steps />
+      <Row gutter={[0, 24]}>
+        <Col span={24}>
+          <Steps />
+        </Col>
 
-        <Row justify="space-between">
+        <Col span={24}>
           {tabKey === "成绩数据表" && (
             <div>
               <Button
@@ -493,10 +507,12 @@ function App() {
               </Button>
             </div>
           )}
-        </Row>
+        </Col>
 
-        <TableTabs items={tabItems} />
-      </Space>
+        <Col span={24}>
+          <TableTabs items={tabItems} />
+        </Col>
+      </Row>
     </>
   );
 }
