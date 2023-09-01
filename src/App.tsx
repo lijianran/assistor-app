@@ -10,6 +10,7 @@ import {
   MergeCellsOutlined,
   ReloadOutlined,
   SettingOutlined,
+  InsertRowLeftOutlined,
 } from "@ant-design/icons";
 
 import { ProLayout, PageContainer, ProCard } from "@ant-design/pro-components";
@@ -101,6 +102,17 @@ export default () => {
                 path: "/class/adjust",
                 name: "3. 分班调整",
                 icon: <CrownOutlined />,
+              },
+            ],
+          },
+          {
+            name: "办公工具",
+            icon: <InsertRowLeftOutlined />,
+            path: "/tools",
+            routes: [
+              {
+                path: "/tools/table_group",
+                name: "表格分组",
               },
             ],
           },

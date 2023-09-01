@@ -60,6 +60,7 @@ export function getTableData(fileData: any[]) {
       title: key,
       dataIndex: key,
       key: key,
+      className: "ant-table-cell-ellipsis",
     });
   }
 

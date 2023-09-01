@@ -11,6 +11,8 @@ import Update from "./pages/Update";
 import Settings from "./pages/Settings";
 import ErrorPage from "./pages/ErrorPage";
 
+import TableGroup from "./pages/tools/TableGroup";
+
 import zhCN from "antd/locale/zh_CN";
 import { ConfigProvider, Empty, theme } from "antd";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -33,6 +35,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
             <Route path="/class/shuffle" element={<ClassShutffle />} />
             <Route path="/class/assign" element={<ClassAssign />} />
             <Route path="/class/adjust" element={<ClassAdjust />} />
+            <Route path="/tools/table_group" element={<TableGroup />} />
 
             <Route path="*" element={<ErrorPage />} />
           </Route>

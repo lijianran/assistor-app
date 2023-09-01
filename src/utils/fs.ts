@@ -41,3 +41,28 @@ export async function openDocsFolder() {
 
   openPath(docsPath);
 }
+
+// 结果目录
+export async function getResultFolder(name: string) {
+  const documentDirPath = await getDocumentDir();
+  const resultDirPath = await joinPath(documentDirPath, "教务软件数据", name);
+  if (await isNotExist(resultDirPath)) {
+    await createDirectory(resultDirPath);
+  }
+  return resultDirPath;
+}
+
+// 导出路径
+export async function getSaveFolder(name: string) {
+  const documentDirPath = await getDocumentDir();
+  const saveDirPath = await joinPath(
+    documentDirPath,
+    "教务软件数据",
+    name,
+    timeDirName()
+  );
+  if (await isNotExist(saveDirPath)) {
+    await createDirectory(saveDirPath);
+  }
+  return saveDirPath;
+}

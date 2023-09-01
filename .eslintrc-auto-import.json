@@ -22,6 +22,8 @@
     "getPictureDir": true,
     "getPublicDir": true,
     "getResourcePath": true,
+    "getResultFolder": true,
+    "getSaveFolder": true,
     "getTableData": true,
     "getVideoDir": true,
     "isNotExist": true,
