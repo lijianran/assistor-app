@@ -9,10 +9,13 @@ function App() {
   async function getHomeLog() {
     const logPath = await getResourcePath("resources", "dev", "home_log.txt");
     const logData = await readTextFileData(logPath);
-    const logList = logData.split(/[\n,]/g).filter((item) => item !== "");
+    const logList = logData.split(/[\n,]/g);
 
     let items: any[] = [];
     for (let i = 0; i < logList.length; i++) {
+      if (logList[i].length < 5) {
+        continue;
+      }
       items.push({ children: logList[i] });
     }
     setLogItems(items);
