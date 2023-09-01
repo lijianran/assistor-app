@@ -1,4 +1,4 @@
-// 数据分组
+// 表格分组
 
 import {
   QuestionCircleOutlined,
@@ -46,7 +46,7 @@ function App() {
   const [groupTableData, setGroupTableData] = useState<any>({});
 
   useEffect(() => {
-    getResultFolder("数据分组");
+    getResultFolder("表格分组");
   }, []);
 
   // 步骤条
@@ -57,7 +57,7 @@ function App() {
     },
     {
       title: "步骤2",
-      description: "数据分组",
+      description: "表格分组",
     },
     {
       title: "步骤3",
@@ -175,7 +175,7 @@ function App() {
   async function saveTables() {
     setCurrentStep(2);
     // 导出路径
-    const saveDirPath = await getSaveFolder("数据分组");
+    const saveDirPath = await getSaveFolder("表格分组");
 
     forEach(groupTableData, async (group, name) => {
       const table = group.map((item: any) => {
@@ -213,7 +213,7 @@ function App() {
     {
       key: "分组结果",
       label: `分组结果`,
-      children: <ResultList name={"数据分组"} currentStep={currentStep} />,
+      children: <ResultList name={"表格分组"} currentStep={currentStep} />,
     },
   ];
 
@@ -221,7 +221,7 @@ function App() {
     <>
       {contextHolder}
       <Title>
-        数据分组
+        表格分组
         <Button
           type="text"
           shape="circle"
