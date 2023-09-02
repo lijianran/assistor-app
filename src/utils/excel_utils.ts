@@ -16,7 +16,7 @@ export async function readExcelFile(filePath: string) {
   for (const sheet in workbook.Sheets) {
     if (workbook.Sheets.hasOwnProperty(sheet)) {
       // 利用 sheet_to_json 方法将 excel 转成 json 数据
-      resData = utils.sheet_to_json(workbook.Sheets[sheet]);
+      resData = utils.sheet_to_json(workbook.Sheets[sheet], { defval: "" });
       break; // 如果只取第一张表，就取消注释这行
     }
   }
