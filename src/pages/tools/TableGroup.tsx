@@ -37,8 +37,8 @@ function App() {
   const [tableData, setTableData] = useState<any[]>([]);
   const [tableColumns, setTableColumns] = useState<any[]>([]);
 
-  const [selectColumns, setselectColumns] = useState<any[]>([]);
-  const [selectedColumn, setSelectedColumn] = useState("");
+  const [selectColumns, setSelectColumns] = useState<any[]>([]);
+  const [selectedColumn, setSelectedColumn] = useState<string | undefined>(undefined);
 
   const [groupInfoData, setGroupInfoData] = useState<any[]>([]);
   const [groupInfoColumns, setGroupInfoColumns] = useState<any[]>([]);
@@ -86,7 +86,7 @@ function App() {
     // 解析数据
     const data = getTableData(fileData);
     messageApi.success("读取成功");
-    setSelectedColumn("");
+    setSelectedColumn(undefined);
     setGroupInfoData([]);
 
     // data
@@ -102,7 +102,7 @@ function App() {
         label: column_name,
       });
     }
-    setselectColumns(columns_temp);
+    setSelectColumns(columns_temp);
 
     setCurrentStep(1);
     setTabKey("数据分组");
@@ -152,7 +152,7 @@ function App() {
           <Col span={12}>
             <Select
               value={selectedColumn}
-              placeholder="选择要分组的一列"
+              placeholder="请选择要分组的一列"
               style={{ width: "100%" }}
               onChange={groupTable}
               options={selectColumns}
