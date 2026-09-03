@@ -1,5 +1,24 @@
 
 
+## [0.2.3](https://github.com/lijianran/assistor-app/compare/v0.2.0...v0.2.3) (2026-09-03)
+
+
+### Bug Fixes
+
+* 更新主页日志家在逻辑 ([a2b3409](https://github.com/lijianran/assistor-app/commit/a2b3409b5471f76e22c6b2bb74f2c887b7750438))
+* 修复表格分组上传缓慢与下载结果为空的文件夹 ([c6474e8](https://github.com/lijianran/assistor-app/commit/c6474e8c2c1e160c345473f6a5890177742d3254))
+* 修复表格空列数据不读取 ([7192609](https://github.com/lijianran/assistor-app/commit/719260970e2e0a454e7aab1290b0deea2cfdfc83))
+
+
+### Features
+
+* 新增数据分组功能 ([df0b8b8](https://github.com/lijianran/assistor-app/commit/df0b8b81e0b85b10ccb2400cd925e9a0c437d24f))
+
+
+### Performance Improvements
+
+* 优化主页cpu占用 ([c74f3cc](https://github.com/lijianran/assistor-app/commit/c74f3cc310f83701fdbca6739e2e86564ee2fe50))
+
 ## [0.2.2](https://github.com/lijianran/assistor-app/compare/v0.2.0...v0.2.2) (2023-09-03)
 
 
