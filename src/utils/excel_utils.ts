@@ -15,8 +15,22 @@ export async function readExcelFile(filePath: string) {
   // 遍历每张工作表进行读取（这里默认只读取第一张表）
   for (const sheet in workbook.Sheets) {
     if (workbook.Sheets.hasOwnProperty(sheet)) {
-      // 利用 sheet_to_json 方法将 excel 转成 json 数据
-      resData = utils.sheet_to_json(workbook.Sheets[sheet], { defval: "" });
+      const ws = workbook.Sheets[sheet];
+      // 部分表格的"使用范围"会铺满整张表(如 A1:XFD1791)，全量解析极慢，
+      // 因此仅解析到实际有数据的最后一列
+      if (ws["!ref"]) {
+        const range = utils.decode_range(ws["!ref"]);
+        let lastCol = 0;
+        for (const cellRef in ws) {
+          if (!cellRef.startsWith("!") && ws[cellRef]?.v != null) {
+            lastCol = Math.max(lastCol, utils.decode_cell(cellRef).c);
+          }
+        }
+        resData = utils.sheet_to_json(ws, {
+          defval: "",
+          range: { s: { r: 0, c: 0 }, e: { r: range.e.r, c: lastCol } },
+        });
+      }
       break; // 如果只取第一张表，就取消注释这行
     }
   }

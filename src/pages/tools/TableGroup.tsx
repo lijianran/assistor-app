@@ -177,17 +177,18 @@ function App() {
     // 导出路径
     const saveDirPath = await getSaveFolder("表格分组");
 
-    forEach(groupTableData, async (group, name) => {
-      const table = group.map((item: any) => {
-        item = omit(item, "key");
-        return item;
-      });
-      const path = await joinPath(saveDirPath, name + ".xlsx");
-      await writeExcelFile(path, table, Object.keys(table[0]));
-    });
+    // forEach 不等待异步回调，必须用 for...of 顺序写入，否则文件夹先打开而文件还没写完
+    for (const [name, group] of Object.entries(groupTableData) as [string, any][]) {
+      const table = group.map((item: any) => omit(item, "key"));
+      // 过滤 Windows 文件名非法字符
+      const safeName = name.replace(/[\\/:*?"<>|]/g, "_");
+      const path = await joinPath(saveDirPath, safeName + ".xlsx");
+      await writeExcelFile(path, table, Object.keys(table[0] || {}));
+    }
 
     // 打开路径
-    openPath(saveDirPath);
+    await openPath(saveDirPath);
+    messageApi.success(`已导出 ${Object.keys(groupTableData).length} 个文件`);
     // 完成
     setCurrentStep(3);
   }
