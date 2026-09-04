@@ -1,5 +1,12 @@
 
 
+## [0.2.5](https://github.com/lijianran/assistor-app/compare/v0.2.4...v0.2.5) (2026-09-04)
+
+
+### Bug Fixes
+
+* release yml node version ([1cff909](https://github.com/lijianran/assistor-app/commit/1cff909bf889f9931cdf04a9918e50fa3042c8be))
+
 ## [0.2.4](https://github.com/lijianran/assistor-app/compare/v0.2.3...v0.2.4) (2026-09-04)
 
 
