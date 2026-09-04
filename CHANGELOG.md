@@ -1,5 +1,12 @@
 
 
+## [0.2.6](https://github.com/lijianran/assistor-app/compare/v0.2.5...v0.2.6) (2026-09-04)
+
+
+### Bug Fixes
+
+* pin tauri-action to v0 for tauri v1 ([db39b72](https://github.com/lijianran/assistor-app/commit/db39b726c9f6337438bff1399149423412629311))
+
 ## [0.2.5](https://github.com/lijianran/assistor-app/compare/v0.2.4...v0.2.5) (2026-09-04)
 
 
