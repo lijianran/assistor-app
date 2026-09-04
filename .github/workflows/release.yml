@@ -28,7 +28,7 @@ jobs:
 
       - name: Generate changelog
         id: create_release
-        run: npx changelogithub --draft --name AssistorApp-${{ steps.vars.outputs.tag }}
+        run: npx changelogithub@14 --draft --name AssistorApp-${{ steps.vars.outputs.tag }}
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
 

@@ -4,7 +4,14 @@ const { exit } = require("process");
 const { resolve } = require("path");
 const { writeFileSync } = require("fs");
 const { version } = require("../package.json");
-const axios = require("axios").default;
+
+// fetch 取代 axios：axios 1.x 走环境代理时重定向会报 ERR_INVALID_PROTOCOL
+const getJson = async (url) => {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`HTTP ${res.status}: ${url}`);
+  return res.json();
+};
+
 
 const owner = "lijianran";
 const repo = "updater";
@@ -36,24 +43,21 @@ var latestJson = {
 
 async function getAllReleases() {
   const url = `https://gitee.com/api/v5/repos/${owner}/${repo}/releases`;
-
-  const res = await axios.get(url);
-  return res.data;
+  return getJson(url);
 }
 
 async function getReleaseByTag() {
   const url = `https://gitee.com/api/v5/repos/${owner}/${repo}/releases/tags/${tag}`;
-
-  const res = await axios.get(url);
-  return res.data;
+  return getJson(url);
 }
 
 const getSignature = async (url) => {
-  const res = await axios.get(url).catch((err) => {
-    console.log("getSignature failed:", err.response.status);
+  const res = await fetch(url);
+  if (!res.ok) {
+    console.log("getSignature failed:", res.status);
     exit(1);
-  });
-  return res.data;
+  }
+  return res.text();
 };
 
 async function generateLatestJson() {
@@ -96,6 +100,12 @@ async function generateLatestJson() {
   }
 
   // console.log(latestJson)
+  // 移除没有产物的平台：tauri 解析 manifest 时任何空 url 都会失败(relative URL without a base)
+  for (const k of Object.keys(latestJson.platforms)) {
+    if (!latestJson.platforms[k].url || !latestJson.platforms[k].signature) {
+      delete latestJson.platforms[k];
+    }
+  }
   const lastJsonFilePath = resolve(__dirname, "..", "latest.json");
   writeFileSync(lastJsonFilePath, JSON.stringify(latestJson, null, 2));
   console.log("Generate latest.json:", lastJsonFilePath);
