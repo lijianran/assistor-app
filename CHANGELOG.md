@@ -1,5 +1,12 @@
 
 
+## [0.2.4](https://github.com/lijianran/assistor-app/compare/v0.2.3...v0.2.4) (2026-09-04)
+
+
+### Bug Fixes
+
+* release scripts ([c125838](https://github.com/lijianran/assistor-app/commit/c125838bd9308986e06d95a0fe92b26a22bfebb3))
+
 ## [0.2.3](https://github.com/lijianran/assistor-app/compare/v0.2.0...v0.2.3) (2026-09-03)
 
 
