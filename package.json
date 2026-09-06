@@ -19,7 +19,7 @@
     ]
   },
   "dependencies": {
-    "@ant-design/icons": "^5.2.5",
+    "@ant-design/icons": "^5.6.1",
     "@ant-design/pro-components": "^2.6.16",
     "@commitlint/cli": "^17.7.1",
     "@commitlint/config-conventional": "^17.7.0",
