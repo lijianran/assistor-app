@@ -1,5 +1,12 @@
 
 
+# [0.3.0](https://github.com/lijianran/assistor-app/compare/v0.2.7...v0.3.0) (2026-09-06)
+
+
+### Features
+
+* 更新成绩统计功能 ([9927058](https://github.com/lijianran/assistor-app/commit/99270580c3a02ab477c3e8f5784dc69889b24495))
+
 ## [0.2.7](https://github.com/lijianran/assistor-app/compare/v0.2.6...v0.2.7) (2026-09-06)
 
 
