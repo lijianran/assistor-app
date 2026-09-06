@@ -27,6 +27,7 @@ declare interface ClassTitleRequired {
   [key: string]: boolean;
 
   班级: boolean;
+  班主任: boolean;
   语文: boolean;
   数学: boolean;
   英语: boolean;
@@ -63,6 +64,7 @@ declare interface ClassTitleIndex {
   [key: string]: string;
 
   班级: string;
+  班主任: string;
   语文: string;
   数学: string;
   英语: string;
@@ -131,19 +133,10 @@ declare interface SubjectScore {
   生物: number;
 }
 declare type ScoreSetting = {
+  /** 各科单科总分（手动录入） */
   subjectScore: SubjectScore;
   totalScore: number;
-  kindGood: number;
-  kindOk: number;
-  class1: number;
-  class2: number;
-  classLimit: number;
 
   setSubjectScore: (val: SubjectScore) => void;
   setTotalScore: (val: number) => void;
-  setKindGood: (val: number) => void;
-  setKindOk: (val: number) => void;
-  setClass1: (val: number) => void;
-  setClass2: (val: number) => void;
-  setClassLimit: (val: number) => void;
 };

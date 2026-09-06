@@ -11,8 +11,6 @@ import { message, Button, Typography, Row, Col, Space, Table } from "antd";
 import type { TabsProps, TourProps } from "antd";
 
 import {
-  keyBy,
-  floor,
   groupBy,
   orderBy,
   forEach,
@@ -21,9 +19,7 @@ import {
   filter,
   round,
   values,
-  forOwn,
-  isNumber,
-  pickBy,
+  max,
 } from "lodash-es";
 
 import { emit } from "@tauri-apps/api/event";
@@ -58,11 +54,7 @@ function App() {
   const [messageApi, contextHolder] = message.useMessage();
 
   const subjectScore = useScoreSettingStore((state) => state.subjectScore);
-  const kindGood = useScoreSettingStore((state) => state.kindGood);
-  const kindOk = useScoreSettingStore((state) => state.kindOk);
-  const class1 = useScoreSettingStore((state) => state.class1);
-  const class2 = useScoreSettingStore((state) => state.class2);
-  const classLimit = useScoreSettingStore((state) => state.classLimit);
+  const totalScore = useScoreSettingStore((state) => state.totalScore);
 
   // 表格数据
   const [scoreColumns, setScoreColumns] = useState<any[]>([]);
@@ -157,8 +149,10 @@ function App() {
 
   // 计算结果
   async function computeResult() {
-    // 结果
-    const table: any = {};
+    if (!totalScore) {
+      messageApi.error("请先在参数配置中录入单科总分");
+      return;
+    }
 
     const targetSubjuects = [
       "总分",
@@ -173,193 +167,151 @@ function App() {
       "生物",
     ];
 
-    console.log(scoreTitleIndex);
-    console.log(scoreTableData.slice(0, 10));
-    console.log(classTitleIndex);
-    console.log(classTableData.slice(0, 10));
+    // 班级信息表: 班级 -> { 人数, 班主任, 各科教师 }
+    const classInfoDict: any = {};
+    forEach(classTableData, (row) => {
+      const className = String(row[classTitleIndex["班级"]]);
+      const info: any = {
+        人数: Number(row[classTitleIndex["人数"]]) || 0,
+        班主任:
+          classTitleIndex["班主任"] !== "无"
+            ? String(row[classTitleIndex["班主任"]] ?? "")
+            : "",
+      };
+      forEach(targetSubjuects, (subject) => {
+        const index = classTitleIndex[subject];
+        info[subject] = index !== "无" ? String(row[index] ?? "") : "";
+      });
+      classInfoDict[className] = info;
+    });
 
-    const classInfoDict = keyBy(classTableData, classTitleIndex["班级"]);
-    console.log("班级信息", classInfoDict);
+    // 学生成绩（空值默认为 0 分）
+    const students = map(scoreTableData, (row) => {
+      const stu: any = { 班级: String(row[scoreTitleIndex["班级"]]) };
+      forEach(targetSubjuects, (subject) => {
+        const index = scoreTitleIndex[subject];
+        stu[subject] = index !== "无" ? Number(row[index]) || 0 : 0;
+      });
+      return stu;
+    });
 
-    // 按总分排序
-    const tsIndex = scoreTitleIndex["总分"];
-    const sortTotalScore = orderBy(scoreTableData, [tsIndex], ["desc"]);
-    // 尖子生边界分数
-    if (classLimit < class1 + class2) {
-      messageApi.error("尖子生范围小于尖子生总数");
-      return;
-    }
-    let classScoreDict: { [key: string]: number } = {};
-    const class1TotalScore = sortTotalScore[class1 - 1][tsIndex];
-    const class2TotalScore = sortTotalScore[class1 + class2 - 1][tsIndex];
-    const classLimitScore = sortTotalScore[classLimit - 1][tsIndex];
+    // 按班级分组，组内按总分从高到低排序
+    const groups = groupBy(students, "班级");
+    forEach(groups, (list, className) => {
+      groups[className] = orderBy(list, ["总分"], ["desc"]);
+    });
 
-    classScoreDict["总分一类"] = class1TotalScore;
-    classScoreDict["总分二类"] = class2TotalScore;
-    console.log("一类尖子生总分", class1TotalScore);
-    console.log("二类尖子生总分", class2TotalScore);
-    console.log(classLimit, "名学生总分为", classLimitScore);
-
-    const classLimitSort = filter(
-      sortTotalScore,
-      (stu) => stu[scoreTitleIndex["总分"]] >= classLimitScore
+    // 成绩表中存在的学科（含总分）
+    const subjects = filter(
+      targetSubjuects,
+      (subject) => scoreTitleIndex[subject] !== "无"
     );
-    forEach(targetSubjuects, (subject) => {
-      // 表中索引
-      const index = scoreTitleIndex[subject];
-      // 不统计
-      if (index === "无" || subject === "总分") {
+
+    // 单科满分检查：满分必须为正数且不低于成绩最高分；最高分不足满分60%时提醒
+    for (const subject of subjects) {
+      const fullScore = subject === "总分" ? totalScore : subjectScore[subject];
+      const maxScore = max(map(students, subject)) ?? 0;
+      if (!fullScore || fullScore <= 0) {
+        messageApi.error(`${subject}：单科总分未配置，请先到参数配置中填写`);
         return;
       }
-
-      // 单科一类二类分数
-      const subjectSort = orderBy(classLimitSort, [index], ["desc"]);
-      classScoreDict[subject + "一类"] = subjectSort[class1 - 1][index];
-      classScoreDict[subject + "二类"] =
-        subjectSort[class1 + class2 - 1][index];
-    });
-    console.log("尖子生边界分数", classScoreDict);
-
-    // 按班级分组
-    const groups = groupBy(scoreTableData, (item) => {
-      return item[scoreTitleIndex["班级"]];
-    });
-    console.log("分班级", groups);
-
-    // 优秀和及格分数线
-    let totalScore = 0;
-    let goodScoreDict: { [key: string]: number } = {};
-    let okScoreDict: { [key: string]: number } = {};
-    forEach(subjectScore, (score, subject) => {
-      if (scoreTitleIndex[subject] === "无") {
+      if (maxScore > fullScore) {
+        messageApi.error(`${subject}：成绩表最高分 ${maxScore} 分，超过单科总分 ${fullScore} 分，请检查参数配置`);
         return;
       }
-      totalScore += score;
-      goodScoreDict[subject] = floor((score * kindGood) / 100 + 0.5);
-      okScoreDict[subject] = floor((score * kindOk) / 100 + 0.5);
-    });
-    goodScoreDict["总分"] = floor((totalScore * kindGood) / 100 + 0.5);
-    okScoreDict["总分"] = floor((totalScore * kindOk) / 100 + 0.5);
+      if (maxScore < fullScore * 0.6) {
+        messageApi.warning(`${subject}：配置单科总分 ${fullScore} 分，但该科成绩表最高分仅 ${maxScore} 分（不满满分的60%），及格率、优秀率将全为 0，请确认参数配置是否正确`);
+      }
+    }
 
-    console.log("参数配置", subjectScore, kindGood, kindOk);
-    console.log("优秀分数线", goodScoreDict);
-    console.log("及格分数线", okScoreDict);
-
-    // 分班级统计
+    // 分班级统计一分四率
+    const table: any = {};
     forEach(groups, (scores, className) => {
-      // 按总分排序
-      groups[className] = orderBy(scores, [scoreTitleIndex["总分"]], ["desc"]);
-      // 班级有效人数
-      if (!(className in classInfoDict)) {
+      const classInfo = classInfoDict[className];
+      if (!classInfo) {
         messageApi.error("班级信息表中缺少班级: " + className);
         return;
       }
-      const countNum = classInfoDict[className][classTitleIndex["人数"]];
+      const countNum = classInfo["人数"];
+      // 按总分排序后取前 countNum 名学生
+      const topList = scores.slice(0, countNum);
 
-      // 统计
-      table[className] = { 班级: className };
-      forEach(targetSubjuects, (subject) => {
-        // 表中索引
-        const index = scoreTitleIndex[subject];
-        // 不统计
-        if (index === "无") {
-          return;
-        }
-
-        // 教师
-        let teacherName;
-        if (classTitleIndex[subject] in classInfoDict[className]) {
-          teacherName = classInfoDict[className][classTitleIndex[subject]];
-        } else {
-          teacherName = "";
-        }
-
-        // 平均分
-        const meanScore = mean(
-          map(groups[className].slice(0, countNum), index)
-        );
-
-        // 统计优秀数据
-        const goodNum = filter(groups[className], function (o) {
-          // 达到优秀线
-          return o[index] >= goodScoreDict[subject];
-        }).length;
-        const goodRatio = goodNum / countNum;
-
-        // 统计及格数据
-        const okNum = filter(groups[className], function (o) {
-          // 达到及格线
-          return o[index] >= okScoreDict[subject];
-        }).length;
-        const okRatio = okNum / countNum;
-
-        // 综合数据
-        const total = meanScore + okRatio * 100 + goodRatio * 100;
-
-        if (subject !== "总分") {
-          table[className][subject + "教师"] = teacherName;
-        }
-        table[className][subject + "平均分"] = round(meanScore, 2);
-        table[className][subject + "优秀人数"] = goodNum;
-        table[className][subject + "优秀率"] = goodRatio;
-        table[className][subject + "及格人数"] = okNum;
-        table[className][subject + "及格率"] = okRatio;
-        table[className][subject + "综合"] = round(total, 2);
-
-        // 统计尖子生个数
-        const classLimit = filter(
+      table[className] = { 班级: className, 人数: countNum };
+      forEach(subjects, (subject) => {
+        // 单科总分（总分学科用配置的总分）
+        const fullScore =
+          subject === "总分" ? totalScore : subjectScore[subject];
+        // 人平分：前 countNum 名学生的平均分
+        const meanScore = mean(map(topList, subject));
+        // 优秀/及格/低分人数（统计全班学生，空值按 0 分）
+        const goodNum = filter(
           scores,
-          (stu) => stu[scoreTitleIndex["总分"]] >= classLimitScore
+          (o) => o[subject] >= (fullScore * 80) / 100
+        ).length;
+        const okNum = filter(
+          scores,
+          (o) => o[subject] >= (fullScore * 60) / 100
+        ).length;
+        const lowNum = filter(
+          scores,
+          (o) => o[subject] < (fullScore * 40) / 100
+        ).length;
+
+        const row = table[className];
+        row[subject + "教师"] =
+          subject === "总分" ? classInfo["班主任"] : classInfo[subject];
+        row[subject + "平均分"] = round(meanScore, 2);
+        row[subject + "得分率"] = round((meanScore / fullScore) * 100, 2);
+        row[subject + "优秀人数"] = goodNum;
+        row[subject + "优秀率"] = round((goodNum / countNum) * 100, 2);
+        row[subject + "及格人数"] = okNum;
+        row[subject + "及格率"] = round((okNum / countNum) * 100, 2);
+        row[subject + "低分人数"] = lowNum;
+        row[subject + "低分率"] = round((lowNum / countNum) * 100, 2);
+        // 四率和 = 人平分 + 优秀率×100 + 及格率×100 + 得分率×100 - 低分率×100
+        row[subject + "四率和"] = round(
+          row[subject + "平均分"] +
+            row[subject + "优秀率"] +
+            row[subject + "及格率"] +
+            row[subject + "得分率"] -
+            row[subject + "低分率"],
+          2
         );
-        const class1Num = filter(
-          classLimit,
-          (stu) =>
-            stu[scoreTitleIndex[subject]] >= classScoreDict[subject + "一类"]
-        ).length;
-        const class2Num = filter(
-          classLimit,
-          (stu) =>
-            stu[scoreTitleIndex[subject]] < classScoreDict[subject + "一类"] &&
-            stu[scoreTitleIndex[subject]] >= classScoreDict[subject + "二类"]
-        ).length;
-        table[className][subject + "一类"] = class1Num;
-        table[className][subject + "二类"] = class2Num;
       });
     });
 
-    console.log("统计", table);
-
-    // 统计各项排名
-    const sortTarget = ["平均分", "优秀率", "及格率", "综合"];
-    forEach(targetSubjuects, (subject) => {
-      // 表中索引
-      const index = scoreTitleIndex[subject];
-      if (index === "无") {
-        return;
-      }
-
-      // 统计排名
-      forEach(sortTarget, (target) => {
-        let rank = 0;
-        let prev = -1;
-        let offset = 0;
-
-        // 平均分排名
-        forEach(orderBy(table, [subject + target], ["desc"]), (item, index) => {
-          if (item[subject + target] !== prev) {
-            rank += offset + 1;
-            offset = 0;
-            prev = item[subject + target];
-          } else {
-            offset += 1;
-          }
-
-          table[item["班级"]][subject + target + "排名"] = rank;
-        });
+    // 各项排名（并列同名次）
+    function rankTable(key: string, order: "asc" | "desc") {
+      let rank = 0;
+      let prev: any = -1;
+      let offset = 0;
+      forEach(orderBy(values(table), [key], [order]), (item) => {
+        if (item[key] !== prev) {
+          rank += offset + 1;
+          offset = 0;
+          prev = item[key];
+        } else {
+          offset += 1;
+        }
+        table[item["班级"]][key + "排名"] = rank;
       });
+    }
+    forEach(subjects, (subject) => {
+      forEach(["平均分", "得分率", "优秀率", "及格率", "四率和"], (target) => {
+        rankTable(subject + target, "desc");
+      });
+      // ponytail: 低分率越低越好，故升序排名（与四率和方向一致）
+      rankTable(subject + "低分率", "asc");
     });
 
-    console.log("排名", table);
+    // 班主任四率和 = 总分人平分 + 总分得分率 + 总分及格率（与样表一致）
+    forEach(values(table), (row) => {
+      row["班主任四率和"] = round(
+        row["总分平均分"] + row["总分得分率"] + row["总分及格率"],
+        2
+      );
+    });
+    rankTable("班主任四率和", "desc");
 
     // 导出路径
     const documentDirPath = await getDocumentDir();
@@ -376,56 +328,121 @@ function App() {
       await createDirectory(saveDirPath);
     }
 
-    // 导出结果
-    const suffix = [
-      "教师",
-      "平均分",
-      "平均分排名",
-      "优秀人数",
-      "优秀率",
-      "优秀率排名",
-      "及格人数",
-      "及格率",
-      "及格率排名",
-      "综合",
-      "综合排名",
-      "一类",
-      "二类",
-    ];
-    forEach(targetSubjuects, async (subject) => {
-      // 不导出
-      if (scoreTitleIndex[subject] === "无") {
-        return;
-      }
+    // 行按班级排序
+    const rows = orderBy(
+      values(table),
+      [(row) => Number(row["班级"]) || row["班级"]],
+      ["asc"]
+    );
 
-      const data = values(table);
+    // 百分数
+    const formatRatio = (value: number) => round(value, 2) + "%";
 
-      // 转换为百分制
-      const ratio_values = map(data, (dict) => {
-        forOwn(dict, (value, key) => {
-          if (
-            isNumber(value) &&
-            (key.endsWith("优秀率") || key.endsWith("及格率"))
-          ) {
-            dict[key] = round(value * 100, 2) + "%";
-          }
-        });
-        return dict;
-      });
-
-      const filteredDictList = ratio_values.map((dict) =>
-        pickBy(
-          dict,
-          (value, key) =>
-            key.includes(subject) || key === scoreTitleIndex["班级"]
-        )
-      );
+    // 1. 分学科单科统计表（每个学科含总分一张表）
+    forEach(subjects, async (subject) => {
+      const header = [
+        "班级",
+        "人数",
+        subject + "教师",
+        subject + "平均分",
+        subject + "平均分排名",
+        subject + "得分率",
+        subject + "得分率排名",
+        subject + "优秀人数",
+        subject + "优秀率",
+        subject + "优秀率排名",
+        subject + "及格人数",
+        subject + "及格率",
+        subject + "及格率排名",
+        subject + "低分人数",
+        subject + "低分率",
+        subject + "低分率排名",
+        subject + "四率和",
+        "排名",
+      ];
+      const data = map(rows, (row) => ({
+        班级: row["班级"],
+        人数: row["人数"],
+        [subject + "教师"]: row[subject + "教师"],
+        [subject + "平均分"]: row[subject + "平均分"],
+        [subject + "平均分排名"]: row[subject + "平均分排名"],
+        [subject + "得分率"]: formatRatio(row[subject + "得分率"]),
+        [subject + "得分率排名"]: row[subject + "得分率排名"],
+        [subject + "优秀人数"]: row[subject + "优秀人数"],
+        [subject + "优秀率"]: formatRatio(row[subject + "优秀率"]),
+        [subject + "优秀率排名"]: row[subject + "优秀率排名"],
+        [subject + "及格人数"]: row[subject + "及格人数"],
+        [subject + "及格率"]: formatRatio(row[subject + "及格率"]),
+        [subject + "及格率排名"]: row[subject + "及格率排名"],
+        [subject + "低分人数"]: row[subject + "低分人数"],
+        [subject + "低分率"]: formatRatio(row[subject + "低分率"]),
+        [subject + "低分率排名"]: row[subject + "低分率排名"],
+        [subject + "四率和"]: row[subject + "四率和"],
+        排名: row[subject + "四率和排名"],
+      }));
       const path = await joinPath(saveDirPath, subject + ".xlsx");
-      const header = map(suffix, function (value) {
-        return subject + value;
-      });
-      await writeExcelFile(path, filteredDictList, ["班级", ...header]);
+      await writeExcelFile(path, data, header);
     });
+
+    // 2. 各班各学科一分四率汇总表
+    const summaryHeader = ["班级", "人数"];
+    forEach(subjects, (subject) => {
+      summaryHeader.push(
+        subject + "教师",
+        subject + "平均分",
+        subject + "得分率",
+        subject + "优秀率",
+        subject + "及格率",
+        subject + "低分率",
+        subject + "四率和",
+        subject + "排名"
+      );
+    });
+    const summaryData = map(rows, (row) => {
+      const item: any = { 班级: row["班级"], 人数: row["人数"] };
+      forEach(subjects, (subject) => {
+        item[subject + "教师"] = row[subject + "教师"];
+        item[subject + "平均分"] = row[subject + "平均分"];
+        item[subject + "得分率"] = formatRatio(row[subject + "得分率"]);
+        item[subject + "优秀率"] = formatRatio(row[subject + "优秀率"]);
+        item[subject + "及格率"] = formatRatio(row[subject + "及格率"]);
+        item[subject + "低分率"] = formatRatio(row[subject + "低分率"]);
+        item[subject + "四率和"] = row[subject + "四率和"];
+        item[subject + "排名"] = row[subject + "四率和排名"];
+      });
+      return item;
+    });
+    await writeExcelFile(
+      await joinPath(saveDirPath, "汇总表.xlsx"),
+      summaryData,
+      summaryHeader
+    );
+
+    // 3. 总排名表（人数、班级、教师、四率和、排名，如样表）
+    const rankSubjects = filter(subjects, (subject) => subject !== "总分");
+    const rankHeader = ["人数", "班级"];
+    forEach(rankSubjects, (subject) => {
+      rankHeader.push(subject + "教师", subject + "四率和", subject + "排名");
+    });
+    rankHeader.push("班主任", "班主任四率和", "班主任排名");
+    const rankData = map(rows, (row) => {
+      const item: any = { 人数: row["人数"], 班级: row["班级"] };
+      forEach(rankSubjects, (subject) => {
+        item[subject + "教师"] = row[subject + "教师"];
+        item[subject + "四率和"] = row[subject + "四率和"];
+        item[subject + "排名"] = row[subject + "四率和排名"];
+      });
+      item["班主任"] = row["总分教师"];
+      item["班主任四率和"] = row["班主任四率和"];
+      item["班主任排名"] = row["班主任四率和排名"];
+      return item;
+    });
+    await writeExcelFile(
+      await joinPath(saveDirPath, "总排名表.xlsx"),
+      rankData,
+      rankHeader
+    );
+
     // 打开路径
     openPath(saveDirPath);
     // 完成

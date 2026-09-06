@@ -29,3 +29,7 @@ dist-ssr
 auto-import.d.ts
 latest.json
 stats.html
+
+# 更新签名私钥，切勿提交
+*.key
+*.key.pub

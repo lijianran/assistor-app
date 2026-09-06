@@ -21,6 +21,7 @@ function initScoreTitle() {
 function initClassTitle() {
   return <ClassTitleIndex>{
     班级: "无",
+    班主任: "无",
     语文: "无",
     数学: "无",
     英语: "无",
@@ -35,13 +36,13 @@ function initClassTitle() {
 }
 
 const titleRequireDict = <ScoreTitleRequired>{
-  姓名: false,
+  姓名: true,
   考号: false,
   班级: true,
   总分: true,
-  语文: false,
-  数学: false,
-  英语: false,
+  语文: true,
+  数学: true,
+  英语: true,
   物理: false,
   化学: false,
   道法: false,
@@ -52,6 +53,7 @@ const titleRequireDict = <ScoreTitleRequired>{
 
 const classRequireDict = <ClassTitleRequired>{
   班级: true,
+  班主任: false,
   人数: true,
   语文: false,
   数学: false,
@@ -185,32 +187,12 @@ export const useScoreSettingStore = create<
       (set, get) => ({
         subjectScore: initSubjectScore(),
         totalScore: 690,
-        kindGood: 80,
-        kindOk: 60,
-        class1: 330,
-        class2: 660,
-        classLimit: 1200,
 
         setSubjectScore: (val) => {
           set({ subjectScore: val });
         },
         setTotalScore(val) {
           set({ totalScore: val });
-        },
-        setKindGood(val) {
-          set({ kindGood: val });
-        },
-        setKindOk(val) {
-          set({ kindOk: val });
-        },
-        setClass1(val) {
-          set({ class1: val });
-        },
-        setClass2(val) {
-          set({ class2: val });
-        },
-        setClassLimit(val) {
-          set({ classLimit: val });
         },
       }),
       {
