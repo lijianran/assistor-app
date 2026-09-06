@@ -1,5 +1,12 @@
 
 
+## [0.2.7](https://github.com/lijianran/assistor-app/compare/v0.2.6...v0.2.7) (2026-09-06)
+
+
+### Bug Fixes
+
+* upgrade @ant-design/icons to 5.6.1 to fix tsc build ([7bbdd92](https://github.com/lijianran/assistor-app/commit/7bbdd92f1c8dae318c7dae50f5a23bde62a503b9))
+
 ## [0.2.6](https://github.com/lijianran/assistor-app/compare/v0.2.5...v0.2.6) (2026-09-04)
 
 
